@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E2723C0F236A8BD900352343 /* LocationSearchTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2723C0E236A8BD900352343 /* LocationSearchTableViewController.swift */; };
 		E2CE2594235D168600362849 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CE2593235D168600362849 /* AppDelegate.swift */; };
 		E2CE2596235D168600362849 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CE2595235D168600362849 /* SceneDelegate.swift */; };
 		E2CE2598235D168600362849 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CE2597235D168600362849 /* FirstViewController.swift */; };
@@ -29,6 +30,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E2723C0E236A8BD900352343 /* LocationSearchTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSearchTableViewController.swift; sourceTree = "<group>"; };
 		E2CE2590235D168600362849 /* YouCommute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YouCommute.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2CE2593235D168600362849 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E2CE2595235D168600362849 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 				E2CE2595235D168600362849 /* SceneDelegate.swift */,
 				E2CE259E235D168900362849 /* Assets.xcassets */,
 				E2CE25A3235D168900362849 /* Info.plist */,
+				E2723C0E236A8BD900352343 /* LocationSearchTableViewController.swift */,
 			);
 			path = YouCommute;
 			sourceTree = "<group>";
@@ -234,6 +237,7 @@
 				E2CE259A235D168600362849 /* EventListViewController.swift in Sources */,
 				E2CE2598235D168600362849 /* FirstViewController.swift in Sources */,
 				E2CE2594235D168600362849 /* AppDelegate.swift in Sources */,
+				E2723C0F236A8BD900352343 /* LocationSearchTableViewController.swift in Sources */,
 				E2CE2596235D168600362849 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -51,6 +51,26 @@ class EventListViewController: UIViewController, UITableViewDataSource, UITableV
         commutes.append(Commute(srcLatitude: 29.5914, srcLongitude: -95.1015, destLatitude: 29.5839, destLongitude: -95.1000, eventName: "Boeing"))
         
         commutes.append(Commute(srcLatitude: 29.5839, srcLongitude: -95.1000, destLatitude: 29.8721, destLongitude: -95.5557, eventName: "Houston"))
+        
+        commutes.append(Commute(srcLatitude: 29.6829, srcLongitude: -95.2876, destLatitude: 29.6499, destLongitude: -95.1784, eventName: "towards ellington"))
+            
+        commutes.append(Commute(srcLatitude: 29.6499, srcLongitude: -95.1784, destLatitude: 29.6060, destLongitude: -95.1266, eventName: "some neighborhood"))
+    
+        commutes.append(Commute(srcLatitude: 29.6060, srcLongitude: -95.1266, destLatitude: 29.5914, destLongitude: -95.1015, eventName: "HEB"))
+        
+        commutes.append(Commute(srcLatitude: 29.5914, srcLongitude: -95.1015, destLatitude: 29.5839, destLongitude: -95.1000, eventName: "Boeing"))
+        
+        commutes.append(Commute(srcLatitude: 29.5839, srcLongitude: -95.1000, destLatitude: 29.8721, destLongitude: -95.5557, eventName: "Houston"))
+        
+        commutes.append(Commute(srcLatitude: 29.6829, srcLongitude: -95.2876, destLatitude: 29.6499, destLongitude: -95.1784, eventName: "towards ellington"))
+            
+        commutes.append(Commute(srcLatitude: 29.6499, srcLongitude: -95.1784, destLatitude: 29.6060, destLongitude: -95.1266, eventName: "some neighborhood"))
+    
+        commutes.append(Commute(srcLatitude: 29.6060, srcLongitude: -95.1266, destLatitude: 29.5914, destLongitude: -95.1015, eventName: "HEB"))
+        
+        commutes.append(Commute(srcLatitude: 29.5914, srcLongitude: -95.1015, destLatitude: 29.5839, destLongitude: -95.1000, eventName: "Boeing"))
+        
+        commutes.append(Commute(srcLatitude: 29.5839, srcLongitude: -95.1000, destLatitude: 29.8721, destLongitude: -95.5557, eventName: "Houston"))
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
