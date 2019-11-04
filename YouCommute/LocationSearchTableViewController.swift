@@ -9,11 +9,13 @@
 import UIKit
 import MapKit
 
-class LocationSearchTableViewController: UITableViewController {
 
+class LocationSearchTableViewController: UITableViewController {
+        
     var handleMapSearchDelegate:HandleMapSearch? = nil
     var matchingItems:[MKMapItem] = []
     var mapView: MKMapView? = nil
+    var resultSearchController: UISearchController? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,6 +25,29 @@ class LocationSearchTableViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        
+        // get instance of the table view controller where we post the results
+        
+        
+        // Create an instance of the UISearchController - it needs the table view controller passed into the constructor
+        resultSearchController = UISearchController(searchResultsController: nil)
+        
+        // set the UISearchController's "updater" to the table view controller
+        resultSearchController!.searchResultsUpdater = self
+        
+        // get a reference to the search bar objects associated with the UISearchController
+        let searchBar = resultSearchController!.searchBar
+        searchBar.sizeToFit()
+        searchBar.placeholder = "Where to start"
+        
+        navigationItem.titleView = resultSearchController!.searchBar
+        
+        // cosmetic stuff
+        resultSearchController!.hidesNavigationBarDuringPresentation = false
+        //resultSearchController!.obscuresBackgroundDuringPresentation = true
+        definesPresentationContext = true
+        
+        
     }
 
     // MARK: - Table view data source
@@ -59,13 +84,14 @@ class LocationSearchTableViewController: UITableViewController {
 //    }
 
 
-}
+} // END OF CLASS
 
 
 extension LocationSearchTableViewController : UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        guard let mapView = mapView, let searchBarText = searchController.searchBar.text else { return }
-        
+        guard let mapView = mapView, let searchBarText = searchController.searchBar.text else {
+            return
+        }
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = searchBarText
         request.region = mapView.region
@@ -75,10 +101,8 @@ extension LocationSearchTableViewController : UISearchResultsUpdating {
             guard let response = response else {
                 return
             }
-            
             self.matchingItems = response.mapItems
             self.tableView.reloadData()
-            
         }
     }
 }
@@ -107,6 +131,6 @@ extension LocationSearchTableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedItem = matchingItems[indexPath.row].placemark
         handleMapSearchDelegate?.dropPinZoomIn(placemark: selectedItem)
-        dismiss(animated: true, completion: nil)
+        self.navigationController?.popToRootViewController(animated: true)
     }
 }

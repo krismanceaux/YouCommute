@@ -11,22 +11,32 @@ import MapKit
 
 struct Commute{
     
+    // Arrival time
+    // Date of Commute
+    // source
+    // destination
+    // event name
+    
     var eventName: String
     var source: MKMapItem?
     var destination: MKMapItem?
-    var request: MKDirections.Request
+    //var request: MKDirections.Request
     var directions: MKDirections
+    var arrivalTime: String
+    var dateOfCommute: String
     
-    init(srcLatitude:Double, srcLongitude:Double, destLatitude: Double, destLongitude: Double, eventName: String) {
-        self.source = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: CLLocationDegrees(exactly: srcLatitude)!, longitude: CLLocationDegrees(exactly: srcLongitude)!)))
-        self.destination = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: CLLocationDegrees(exactly: destLatitude)!, longitude: CLLocationDegrees(exactly: destLongitude)!)))
+    init(source: MKPlacemark, destination: MKPlacemark, eventName: String, arrivalTime: String, dateOfCommute: String) {
+        self.source = MKMapItem(placemark: source)
+        self.destination = MKMapItem(placemark: destination)
+        self.arrivalTime = arrivalTime
+        self.dateOfCommute = dateOfCommute
         
-        self.request = MKDirections.Request()
-        self.request.source = self.source
-        self.request.destination = self.destination
-        self.request.transportType = .automobile
+        let request = MKDirections.Request()
+        request.source = self.source
+        request.destination = self.destination
+        request.transportType = .automobile
         
-        self.directions = MKDirections(request: self.request)
+        self.directions = MKDirections(request: request)
         self.eventName = eventName
     }
 }
@@ -34,44 +44,12 @@ struct Commute{
 
 class EventListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate  {
     
+    @IBOutlet weak var tableView: UITableView!
     
     var commutes: [Commute] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // DUMMY DATA
-        
-        commutes.append(Commute(srcLatitude: 29.6829, srcLongitude: -95.2876, destLatitude: 29.6499, destLongitude: -95.1784, eventName: "towards ellington"))
-        
-        commutes.append(Commute(srcLatitude: 29.6499, srcLongitude: -95.1784, destLatitude: 29.6060, destLongitude: -95.1266, eventName: "some neighborhood"))
-    
-        commutes.append(Commute(srcLatitude: 29.6060, srcLongitude: -95.1266, destLatitude: 29.5914, destLongitude: -95.1015, eventName: "HEB"))
-        
-        commutes.append(Commute(srcLatitude: 29.5914, srcLongitude: -95.1015, destLatitude: 29.5839, destLongitude: -95.1000, eventName: "Boeing"))
-        
-        commutes.append(Commute(srcLatitude: 29.5839, srcLongitude: -95.1000, destLatitude: 29.8721, destLongitude: -95.5557, eventName: "Houston"))
-        
-        commutes.append(Commute(srcLatitude: 29.6829, srcLongitude: -95.2876, destLatitude: 29.6499, destLongitude: -95.1784, eventName: "towards ellington"))
-            
-        commutes.append(Commute(srcLatitude: 29.6499, srcLongitude: -95.1784, destLatitude: 29.6060, destLongitude: -95.1266, eventName: "some neighborhood"))
-    
-        commutes.append(Commute(srcLatitude: 29.6060, srcLongitude: -95.1266, destLatitude: 29.5914, destLongitude: -95.1015, eventName: "HEB"))
-        
-        commutes.append(Commute(srcLatitude: 29.5914, srcLongitude: -95.1015, destLatitude: 29.5839, destLongitude: -95.1000, eventName: "Boeing"))
-        
-        commutes.append(Commute(srcLatitude: 29.5839, srcLongitude: -95.1000, destLatitude: 29.8721, destLongitude: -95.5557, eventName: "Houston"))
-        
-        commutes.append(Commute(srcLatitude: 29.6829, srcLongitude: -95.2876, destLatitude: 29.6499, destLongitude: -95.1784, eventName: "towards ellington"))
-            
-        commutes.append(Commute(srcLatitude: 29.6499, srcLongitude: -95.1784, destLatitude: 29.6060, destLongitude: -95.1266, eventName: "some neighborhood"))
-    
-        commutes.append(Commute(srcLatitude: 29.6060, srcLongitude: -95.1266, destLatitude: 29.5914, destLongitude: -95.1015, eventName: "HEB"))
-        
-        commutes.append(Commute(srcLatitude: 29.5914, srcLongitude: -95.1015, destLatitude: 29.5839, destLongitude: -95.1000, eventName: "Boeing"))
-        
-        commutes.append(Commute(srcLatitude: 29.5839, srcLongitude: -95.1000, destLatitude: 29.8721, destLongitude: -95.5557, eventName: "Houston"))
-
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -128,7 +106,9 @@ class EventListViewController: UIViewController, UITableViewDataSource, UITableV
         return ("\(Int(hours)) hr \(Int(minutes)) min")
     }
 
-
+    override func viewDidAppear(_ animated: Bool) {
+        self.tableView.reloadData()
+    }
 
 }
 
