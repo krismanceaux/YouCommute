@@ -46,11 +46,32 @@ class FirstViewController : UIViewController{
         performSegue(withIdentifier: "toSearchResults", sender: self)
     }
     
+    func alertTemplate(msg: String){
+        let alert = UIAlertController(title: "Error", message: msg, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
+        self.present(alert, animated: true)
+    }
+    
+    // TODO: In the future this needs create a Commute object, and store it to the database
     @IBAction func submitCommute(_ sender: Any) {
-        //print(self.tabBarController?.viewControllers!)
+        guard fromTextField.text!.count > 0 && toTextField.text!.count > 0 && eventName.text!.count > 0 && dateTextField.text!.count > 0 && timeTextField.text!.count > 0 else {
+            
+            alertTemplate(msg: "Please fill all input fields")
+            return
+            
+        }
+        
+        guard self.destination != nil && self.source != nil else{
+            alertTemplate(msg: "Either the destination or starting point is not a valid address. Please use the \"From\" and \"To\" buttons to lookup the address.")
+            return
+        }
+        
+        
+        
         let navVC = self.tabBarController?.viewControllers![0] as! UINavigationController
         let eventListVC = navVC.viewControllers.first as! EventListViewController
         eventListVC.commutes.append(Commute(source: self.source!, destination: self.destination!, eventName: eventName.text!, arrivalTime: timeTextField.text!, dateOfCommute: dateTextField.text!))
+        
     }
     
     @IBAction func previewRoute(_ sender: Any) {
@@ -120,7 +141,7 @@ class FirstViewController : UIViewController{
 
             for route in unwrappedResponse.routes {
                 self.mapView.addOverlay(route.polyline)
-                self.mapView.setVisibleMapRect(route.polyline.boundingMapRect, animated: false)
+                self.mapView.setVisibleMapRect(route.polyline.boundingMapRect, animated: true)
             }
         }
     }

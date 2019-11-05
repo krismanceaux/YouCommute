@@ -10,17 +10,9 @@ import UIKit
 import MapKit
 
 struct Commute{
-    
-    // Arrival time
-    // Date of Commute
-    // source
-    // destination
-    // event name
-    
     var eventName: String
     var source: MKMapItem?
     var destination: MKMapItem?
-    //var request: MKDirections.Request
     var directions: MKDirections
     var arrivalTime: String
     var dateOfCommute: String
@@ -72,7 +64,7 @@ class EventListViewController: UIViewController, UITableViewDataSource, UITableV
         return self.commutes.count
     }
 
-    
+    // TODO: When database is hooked up, this needs to pull commutes for today initially. And every time this view appears it needs to reload its data
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "eventCell", for: indexPath)
         
