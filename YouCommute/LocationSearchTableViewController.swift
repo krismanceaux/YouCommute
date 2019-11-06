@@ -44,7 +44,7 @@ class LocationSearchTableViewController: UITableViewController {
         
         // cosmetic stuff
         resultSearchController!.hidesNavigationBarDuringPresentation = false
-        //resultSearchController!.obscuresBackgroundDuringPresentation = true
+        resultSearchController!.obscuresBackgroundDuringPresentation = false
         definesPresentationContext = true
         
         
