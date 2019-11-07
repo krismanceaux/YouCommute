@@ -19,6 +19,7 @@ class FirstViewController : UIViewController{
     var destination: MKPlacemark? = nil
     var source: MKPlacemark? = nil
     var isSource = false
+    
     @IBOutlet weak var fromTextField: UITextField!
     @IBOutlet weak var toTextField: UITextField!
     @IBOutlet weak var eventName: UITextField!
@@ -72,10 +73,25 @@ class FirstViewController : UIViewController{
         let eventListVC = navVC.viewControllers.first as! EventListViewController
         eventListVC.commutes.append(Commute(source: self.source!, destination: self.destination!, eventName: eventName.text!, arrivalTime: timeTextField.text!, dateOfCommute: dateTextField.text!))
         
+        fromTextField.text = ""
+        toTextField.text = ""
+        eventName.text = ""
+        source = nil
+        destination = nil
+        let overlays = mapView.overlays
+        mapView.removeOverlays(overlays)
+        clManager.requestLocation()
+
+        self.tabBarController!.selectedIndex = 0
     }
     
     @IBAction func previewRoute(_ sender: Any) {
-        mapDirections()
+        if source != nil && destination != nil{
+            mapDirections()
+        }
+        else{
+            alertTemplate(msg: "Cannot preview the route until the addresses are specified")
+        }
     }
     
     
