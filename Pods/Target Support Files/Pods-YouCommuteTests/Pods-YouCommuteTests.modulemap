@@ -1,0 +1,6 @@
+framework module Pods_YouCommuteTests {
+  umbrella header "Pods-YouCommuteTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
