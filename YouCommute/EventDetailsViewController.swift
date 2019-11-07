@@ -15,11 +15,11 @@ class EventDetailsViewController: UIViewController {
     var travelTime: Double = 0.0
     
     @IBOutlet weak var whenToLeave: UILabel!
-    @IBOutlet weak var dateOfCommute: UILabel!
-    @IBOutlet weak var arrivalTime: UILabel!
+    @IBOutlet weak var dateOfCommute: UITextField!
+    @IBOutlet weak var arrivalTime: UITextField!
     @IBOutlet weak var eventName: UILabel!
-    @IBOutlet weak var toAddress: UILabel!
-    @IBOutlet weak var fromAddress: UILabel!
+    @IBOutlet weak var toAddress: UITextField!
+    @IBOutlet weak var fromAddress: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
