@@ -61,20 +61,28 @@ class EventDetailsViewController: UIViewController {
         let arrivalHour = Double(timeArr[0])
         let arrivalMinutes = Double(timeArr[1])
         
-        var leaveHour = arrivalHour! - hours
-        var leaveMin = arrivalMinutes! - minutes
-        if leaveMin < 0{
-            leaveMin = 60 - abs(leaveMin)
-            leaveHour -= 1
+        var leaveHour = arrivalHour!
+        var leaveMin = arrivalMinutes!
+        for _ in 0..<(Int(minutes) + 60 * Int(hours)){
+            leaveMin -= 1
+            if leaveMin < 0{
+                leaveMin = 59
+                leaveHour-=1
+            }
+            if leaveHour < 1{
+                leaveHour=12
+                if time1Arr![1] == "AM"{
+                    time1Arr![1] = "PM"
+                }
+                else{
+                    time1Arr![1] = "AM"
+                }
+            }
+            
         }
-        if leaveHour < 0 {
-            leaveHour = 12 - abs(leaveHour)
-            if time1Arr![1] == "AM"{
-                time1Arr![1] = "PM"
-            }
-            else{
-                time1Arr![1] = "AM"
-            }
+        
+        if leaveMin < 10{
+            return "\(Int(leaveHour)):0\(Int(leaveMin)) \(time1Arr![1])"
         }
         return "\(Int(leaveHour)):\(Int(leaveMin)) \(time1Arr![1])"
     }

@@ -9,15 +9,6 @@
 import UIKit
 import MapKit
 
-//  <column>  :  <data type>
-// event name : String
-// from address: string
-// from coordinates: (double, double) -> could be a lookup table
-// to address : string
-// to coordinates: (double, double) -> could be a lookup table
-// arrival time: string
-// date of commute: string
-
 
 struct Commute{
     var eventName: String

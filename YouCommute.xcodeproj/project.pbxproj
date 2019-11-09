@@ -110,9 +110,6 @@
 		E2CE2592235D168600362849 /* YouCommute */ = {
 			isa = PBXGroup;
 			children = (
-				E2CE25BD235D273A00362849 /* Controller */,
-				E2CE25BC235D273200362849 /* View */,
-				E2CE25BB235D272700362849 /* Model */,
 				E2CE2593235D168600362849 /* AppDelegate.swift */,
 				E2CE259B235D168600362849 /* Main.storyboard */,
 				E2CE25A0235D168900362849 /* LaunchScreen.storyboard */,
@@ -135,27 +132,6 @@
 				E2CE25AE235D168A00362849 /* Info.plist */,
 			);
 			path = YouCommuteTests;
-			sourceTree = "<group>";
-		};
-		E2CE25BB235D272700362849 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
-		E2CE25BC235D273200362849 /* View */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		E2CE25BD235D273A00362849 /* Controller */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Controller;
 			sourceTree = "<group>";
 		};
 		F4C5CB8F72DCF1CA3C0C3CB3 /* Frameworks */ = {
@@ -505,7 +481,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Y36668R92H;
 				INFOPLIST_FILE = YouCommute/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -525,7 +501,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Y36668R92H;
 				INFOPLIST_FILE = YouCommute/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

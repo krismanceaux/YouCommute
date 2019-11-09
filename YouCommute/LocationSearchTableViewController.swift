@@ -38,11 +38,9 @@ class LocationSearchTableViewController: UITableViewController {
         // get a reference to the search bar objects associated with the UISearchController
         let searchBar = resultSearchController!.searchBar
         searchBar.sizeToFit()
-        searchBar.placeholder = "Where to start"
+        searchBar.placeholder = "Search for a location"
         
         navigationItem.titleView = resultSearchController!.searchBar
-        
-        // cosmetic stuff
         resultSearchController!.hidesNavigationBarDuringPresentation = false
         resultSearchController!.obscuresBackgroundDuringPresentation = false
         definesPresentationContext = true

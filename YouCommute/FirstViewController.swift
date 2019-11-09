@@ -19,92 +19,24 @@ class FirstViewController : UIViewController{
     var destination: MKPlacemark? = nil
     var source: MKPlacemark? = nil
     var isSource = false
-    
+    let clManager = CLLocationManager()
+    @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var fromTextField: UITextField!
     @IBOutlet weak var toTextField: UITextField!
     @IBOutlet weak var eventName: UITextField!
     @IBOutlet weak var dateTextField: UITextField!
     @IBOutlet weak var timeTextField: UITextField!
     
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "toSearchResults" {
-            
-            let locationSearchTable = segue.destination as! LocationSearchTableViewController
-            locationSearchTable.mapView = self.mapView
-            locationSearchTable.handleMapSearchDelegate = self
-        }
-    }
-    
-    @IBAction func getFromLocation(_ sender: Any) {
-        self.isSource = true
-        performSegue(withIdentifier: "toSearchResults", sender: self)
-
-    }
-  
-    @IBAction func getToLocation(_ sender: Any) {
-        self.isSource = false
-        performSegue(withIdentifier: "toSearchResults", sender: self)
-    }
-    
-    func alertTemplate(msg: String){
-        let alert = UIAlertController(title: "Error", message: msg, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
-        self.present(alert, animated: true)
-    }
-    
-    // TODO: In the future this needs create a Commute object, and store it to the database
-    @IBAction func submitCommute(_ sender: Any) {
-        guard fromTextField.text!.count > 0 && toTextField.text!.count > 0 && eventName.text!.count > 0 && dateTextField.text!.count > 0 && timeTextField.text!.count > 0 else {
-            
-            alertTemplate(msg: "Please fill all input fields")
-            return
-            
-        }
-        
-        guard self.destination != nil && self.source != nil else{
-            alertTemplate(msg: "Either the destination or starting point is not a valid address. Please use the \"From\" and \"To\" buttons to lookup the address.")
-            return
-        }
-        
-        
-        
-        let navVC = self.tabBarController?.viewControllers![0] as! UINavigationController
-        let eventListVC = navVC.viewControllers.first as! EventListViewController
-        eventListVC.commutes.append(Commute(source: self.source!, destination: self.destination!, eventName: eventName.text!, arrivalTime: timeTextField.text!, dateOfCommute: dateTextField.text!))
-        
-        fromTextField.text = ""
-        toTextField.text = ""
-        eventName.text = ""
-        source = nil
-        destination = nil
-        let overlays = mapView.overlays
-        mapView.removeOverlays(overlays)
-        clManager.requestLocation()
-
-        self.tabBarController!.selectedIndex = 0
-    }
-    
-    @IBAction func previewRoute(_ sender: Any) {
-        if source != nil && destination != nil{
-            mapDirections()
-        }
-        else{
-            alertTemplate(msg: "Cannot preview the route until the addresses are specified")
-        }
-    }
-    
-    
-    let clManager = CLLocationManager()
-    @IBOutlet weak var mapView: MKMapView!
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // get user location
         clManager.delegate = self
         clManager.desiredAccuracy = kCLLocationAccuracyBest
         clManager.requestWhenInUseAuthorization()
         clManager.requestLocation()
         
+        // format the date and time picker initial values
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = UIDatePicker.Mode.date
         datePicker.addTarget(self, action: #selector(dateValueChange(sender:)), for: .valueChanged)
@@ -126,6 +58,77 @@ class FirstViewController : UIViewController{
         timeTextField.text = formatter.string(from: timePicker.date)
     }
     
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toSearchResults" {
+            
+            let locationSearchTable = segue.destination as! LocationSearchTableViewController
+            locationSearchTable.mapView = self.mapView
+            locationSearchTable.handleMapSearchDelegate = self
+        }
+    }
+    
+    // segues to the table view controller that displays the search results
+    @IBAction func getFromLocation(_ sender: Any) {
+        self.isSource = true
+        performSegue(withIdentifier: "toSearchResults", sender: self)
+
+    }
+  
+    // segues to the table view controller that displays the search results
+    @IBAction func getToLocation(_ sender: Any) {
+        self.isSource = false
+        performSegue(withIdentifier: "toSearchResults", sender: self)
+    }
+    
+    // generic error handling alert
+    func alertTemplate(msg: String){
+        let alert = UIAlertController(title: "Error", message: msg, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
+        self.present(alert, animated: true)
+    }
+    
+    // TODO: In the future this needs create a Commute object, and store it to the database
+    @IBAction func submitCommute(_ sender: Any) {
+        guard fromTextField.text!.count > 0 && toTextField.text!.count > 0 && eventName.text!.count > 0 && dateTextField.text!.count > 0 && timeTextField.text!.count > 0 else {
+            
+            alertTemplate(msg: "Please fill all input fields")
+            return
+            
+        }
+        
+        guard self.destination != nil && self.source != nil else{
+            alertTemplate(msg: "Either the destination or starting point is not a valid address. Please use the \"From\" and \"To\" buttons to lookup the address.")
+            return
+        }
+        
+        let navVC = self.tabBarController?.viewControllers![0] as! UINavigationController
+        let eventListVC = navVC.viewControllers.first as! EventListViewController
+        eventListVC.commutes.append(Commute(source: self.source!, destination: self.destination!, eventName: eventName.text!, arrivalTime: timeTextField.text!, dateOfCommute: dateTextField.text!))
+        
+        // Clear input fields before switching back to
+        fromTextField.text = ""
+        toTextField.text = ""
+        eventName.text = ""
+        source = nil
+        destination = nil
+        let overlays = mapView.overlays
+        mapView.removeOverlays(overlays)
+        clManager.requestLocation()
+
+        self.tabBarController!.selectedIndex = 0
+    }
+    
+    @IBAction func previewRoute(_ sender: Any) {
+        if source != nil && destination != nil{
+            mapDirections()
+        }
+        else{
+            alertTemplate(msg: "Cannot preview the route until the addresses are specified")
+        }
+    }
+    
+    // listens for the time value to change
     @objc func timeValueChange(sender: UIDatePicker){
         let formatter = DateFormatter()
         formatter.dateStyle = DateFormatter.Style.none
@@ -133,16 +136,20 @@ class FirstViewController : UIViewController{
         timeTextField.text = formatter.string(from: sender.date)
     }
     
+    // listens for the date value to change
     @objc func dateValueChange(sender: UIDatePicker){
         let formatter = DateFormatter()
         formatter.dateStyle = DateFormatter.Style.medium
         formatter.timeStyle = DateFormatter.Style.none
         dateTextField.text = formatter.string(from: sender.date)
     }
+    
+    // allows you to exit editing the time, date, or text
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
     }
     
+    // calculates the directions and creates the map overlay
     func mapDirections() {
         let request = MKDirections.Request()
         request.source = MKMapItem(placemark: self.source!)
@@ -162,7 +169,7 @@ class FirstViewController : UIViewController{
         }
     }
     
-    // THROWS A BUNCH OF ERRORS IN THE CONSOLE. FIX THIS LATER
+    // renders the map overlay
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         let renderer = MKPolylineRenderer(polyline: overlay as! MKPolyline)
         renderer.strokeColor = .blue
