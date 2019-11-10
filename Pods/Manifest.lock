@@ -1,16 +1,22 @@
 PODS:
   - FSCalendar (2.8.0)
+  - SQLite.swift (0.12.2):
+    - SQLite.swift/standard (= 0.12.2)
+  - SQLite.swift/standard (0.12.2)
 
 DEPENDENCIES:
   - FSCalendar
+  - SQLite.swift (~> 0.12.0)
 
 SPEC REPOS:
   trunk:
     - FSCalendar
+    - SQLite.swift
 
 SPEC CHECKSUMS:
   FSCalendar: 3a5ed3636e2ba1b83ebebfcf0c2603105a6f5efe
+  SQLite.swift: d2b4642190917051ce6bd1d49aab565fe794eea3
 
-PODFILE CHECKSUM: 76ba69df64593430c86b2b9b0c5f9ed456fd5812
+PODFILE CHECKSUM: 27cb88d1c507d5d89a01139a81181326345d96dd
 
 COCOAPODS: 1.8.4

@@ -1,2 +1,3 @@
 ${PODS_ROOT}/Target Support Files/Pods-YouCommute/Pods-YouCommute-frameworks.sh
 ${BUILT_PRODUCTS_DIR}/FSCalendar/FSCalendar.framework
+${BUILT_PRODUCTS_DIR}/SQLite.swift/SQLite.framework

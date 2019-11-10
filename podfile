@@ -7,6 +7,7 @@ target 'YouCommute' do
 
   # Pods for YouCommute
   pod 'FSCalendar'
+  pod 'SQLite.swift', '~> 0.12.0'
 
   target 'YouCommuteTests' do
     inherit! :search_paths
