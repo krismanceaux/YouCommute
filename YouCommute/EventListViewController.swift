@@ -8,7 +8,9 @@
 
 import UIKit
 import MapKit
-
+import CoreLocation
+import SQLite
+import Contacts
 
 struct Commute{
     var eventName: String
@@ -35,10 +37,26 @@ struct Commute{
     }
 }
 
+struct dbEntry{
+    let id = Expression<Int>("id")
+    let eventName = Expression<String>("eventName")
+    let destLong = Expression<Double>("destLong")
+    let destLat = Expression<Double>("destLat")
+    let srcLong = Expression<Double>("srcLong")
+    let srcLat = Expression<Double>("srcLat")
+    let arrivalTime = Expression<String>("arrivalTime")
+    let dateOfCommute = Expression<String>("dateOfCommute")
+//    let srcAddress =
+}
 
 class EventListViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
+    var database: Connection!
+    let commuteTable = Table("commute")
+
+    let columns = dbEntry()
+    
     
     var commutes: [Commute] = []
     var travelTimes: [Double] = []
@@ -52,6 +70,40 @@ class EventListViewController: UIViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
+
+        do {
+            let documentDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            let fileUrl = documentDirectory.appendingPathComponent("users").appendingPathExtension("sqlite3")
+            let database = try Connection(fileUrl.path)
+            self.database = database
+        } catch {
+            print(error)
+        }
+//        do{
+//            try database.run(commuteTable.drop(ifExists: true))
+//        } catch {
+//            print("error")
+//        }
+
+        let table = self.commuteTable.create(ifNotExists: true) {
+            (table) in
+            table.column(self.columns.id, primaryKey: true)
+            table.column(self.columns.eventName)
+            table.column(self.columns.destLat)
+            table.column(self.columns.destLong)
+            table.column(self.columns.srcLat)
+            table.column(self.columns.srcLong)
+            table.column(self.columns.arrivalTime)
+            table.column(self.columns.dateOfCommute)
+        }
+
+        do {
+            try self.database.run(table)
+            print("Created Table")
+        } catch {
+            print(error)
+        }
+
     }
 
     func getETA(direction: MKDirections, cell: UITableViewCell, indexPath:IndexPath) {
@@ -62,6 +114,13 @@ class EventListViewController: UIViewController {
             self.travelTimes.append(tTime)
             travelTimeLabel.text = self.formatTime(time: tTime)
         }
+    }
+    
+    func formatDate(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = DateFormatter.Style.medium
+        formatter.timeStyle = DateFormatter.Style.none
+        return formatter.string(from: date)
     }
     
     func formatTime(time: Double) -> String {
@@ -80,8 +139,46 @@ class EventListViewController: UIViewController {
         return ("\(Int(hours)) hr \(Int(minutes)) min")
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        self.tableView.reloadData()
+   override func viewDidAppear(_ animated: Bool) {
+        // list commutes
+        commutes = []
+        let today = formatDate(date: Date())
+        let commutesToday = commuteTable.filter(columns.dateOfCommute == today)
+        do {
+            for commute in try self.database.prepare(commutesToday) {
+                var srcAddressDict: [String: String] = [:]
+                var destAddressDict: [String: String] = [:]
+
+                let srcLocation = CLLocation(latitude: commute[self.columns.srcLat], longitude: commute[self.columns.srcLong])
+                let destLocation = CLLocation(latitude: commute[self.columns.destLat], longitude: commute[self.columns.destLong])
+                
+                CLGeocoder().reverseGeocodeLocation(srcLocation){ (placemark, error) in
+                    if error != nil{
+                        print(error?.localizedDescription ?? "ERROR")
+                    }
+                    if let place = placemark?[0] {
+                        srcAddressDict = [CNPostalAddressStreetKey: place.name!, CNPostalAddressCityKey: place.locality!, CNPostalAddressPostalCodeKey: place.postalCode!, CNPostalAddressISOCountryCodeKey: place.isoCountryCode!]
+
+                        CLGeocoder().reverseGeocodeLocation(destLocation){ (placemark, error) in
+                            if error != nil{
+                                print(error?.localizedDescription ?? "ERROR")
+                            }
+                            if let place = placemark?[0] {
+                                destAddressDict = [CNPostalAddressStreetKey: place.name!, CNPostalAddressCityKey: place.locality!, CNPostalAddressPostalCodeKey: place.postalCode!, CNPostalAddressISOCountryCodeKey: place.isoCountryCode!]
+                                let srcCoordinates = CLLocationCoordinate2DMake(commute[self.columns.srcLat], commute[self.columns.srcLong])
+                                let destCoordinates = CLLocationCoordinate2DMake(commute[self.columns.destLat], commute[self.columns.destLong])
+                                let com = Commute(source: MKPlacemark(coordinate: srcCoordinates, addressDictionary: srcAddressDict), destination: MKPlacemark(coordinate: destCoordinates, addressDictionary: destAddressDict), eventName: commute[self.columns.eventName], arrivalTime: commute[self.columns.arrivalTime], dateOfCommute: commute[self.columns.dateOfCommute])
+                                self.commutes.append(com)
+
+                                self.tableView.reloadData()
+                            }
+                        }
+                    }
+                }
+            }
+        } catch {
+            print(error)
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

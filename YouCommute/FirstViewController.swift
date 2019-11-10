@@ -8,12 +8,18 @@
 
 import UIKit
 import MapKit
+import SQLite
+import CoreLocation
 
 protocol HandleMapSearch {
     func dropPinZoomIn(placemark:MKPlacemark)
 }
 
 class FirstViewController : UIViewController{
+    
+    var database: Connection!
+    let commuteTable = Table("commute")
+    let columns = dbEntry()
     
     var selectedPin:MKPlacemark? = nil
     var destination: MKPlacemark? = nil
@@ -56,6 +62,16 @@ class FirstViewController : UIViewController{
         formatter.dateStyle = DateFormatter.Style.none
         formatter.timeStyle = DateFormatter.Style.short
         timeTextField.text = formatter.string(from: timePicker.date)
+        
+        // connect to database
+        do {
+            let documentDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            let fileUrl = documentDirectory.appendingPathComponent("users").appendingPathExtension("sqlite3")
+            let database = try Connection(fileUrl.path)
+            self.database = database
+        } catch {
+            print(error)
+        }
     }
     
     
@@ -102,9 +118,19 @@ class FirstViewController : UIViewController{
             return
         }
         
-        let navVC = self.tabBarController?.viewControllers![0] as! UINavigationController
-        let eventListVC = navVC.viewControllers.first as! EventListViewController
-        eventListVC.commutes.append(Commute(source: self.source!, destination: self.destination!, eventName: eventName.text!, arrivalTime: timeTextField.text!, dateOfCommute: dateTextField.text!))
+//        let navVC = self.tabBarController?.viewControllers![0] as! UINavigationController
+//        let eventListVC = navVC.viewControllers.first as! EventListViewController
+//        eventListVC.commutes.append(Commute(source: self.source!, destination: self.destination!, eventName: eventName.text!, arrivalTime: timeTextField.text!, dateOfCommute: dateTextField.text!))
+//
+        
+        let insertCommute = self.commuteTable.insert(self.columns.arrivalTime <- timeTextField.text!, self.columns.dateOfCommute <- dateTextField.text!, self.columns.destLat <- (destination?.coordinate.latitude)!, self.columns.destLong <- (destination?.coordinate.longitude)!, self.columns.eventName <- (eventName.text!), self.columns.srcLat <- (source?.coordinate.latitude)!, self.columns.srcLong <- (source?.coordinate.longitude)!)
+
+        do {
+            try self.database.run(insertCommute)
+            print("INSERTED COMMUTE")
+        } catch {
+            print(error)
+        }
         
         // Clear input fields before switching back to
         fromTextField.text = ""
