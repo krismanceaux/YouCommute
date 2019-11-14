@@ -11,6 +11,7 @@ import FSCalendar
 
 class CalendarViewController: UIViewController {
     fileprivate weak var calendar: FSCalendar!
+    
 
     override func viewDidLoad() {
         
@@ -27,7 +28,7 @@ class CalendarViewController: UIViewController {
         calendar.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         calendar.heightAnchor.constraint(equalToConstant: view.frame.height).isActive = true
         calendar.widthAnchor.constraint(equalToConstant: view.frame.width).isActive = true
-        calendar.allowsMultipleSelection = true
+        calendar.allowsMultipleSelection = false
         
         ///
         calendar.appearance.headerMinimumDissolvedAlpha = 0.0
@@ -39,7 +40,46 @@ class CalendarViewController: UIViewController {
         
         self.calendar = calendar
     }
+    
+    func formatDate(date: String) -> String {
+        let dateTimeArray = date.components( separatedBy: "T")
+        let dateArray = dateTimeArray[0].components(separatedBy: "-")
+        return buildDate(dateArray: dateArray)
+    }
    
+    func buildDate(dateArray: [String]) -> String{
+        var month = ""
+        switch dateArray[1] {
+        case "01":
+            month = "Jan"
+        case "02":
+            month = "Feb"
+        case "03":
+            month = "Mar"
+        case "04":
+            month = "Apr"
+        case "05":
+            month = "May"
+        case "06":
+            month = "Jun"
+        case "07":
+            month = "Jul"
+        case "08":
+            month = "Aug"
+        case "09":
+            month = "Sep"
+        case "10":
+            month = "Oct"
+        case "11":
+            month = "Nov"
+        case "12":
+            month = "Dec"
+        default:
+            month = "Mystery Month"
+        }
+        
+        return "\(month) \(dateArray[2]), \(dateArray[0])"
+    }
     
 }
 
@@ -47,7 +87,10 @@ extension CalendarViewController:FSCalendarDataSource,FSCalendarDelegate{
     
     //fetching date
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        print(date)
+        let navC = self.tabBarController!.viewControllers![0] as! UINavigationController
+        let eventList = navC.viewControllers[0] as! EventListViewController
+        eventList.queryDate = formatDate(date: (date.datatypeValue))
+        self.tabBarController!.selectedIndex = 0
     }
     
     func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {

@@ -57,7 +57,7 @@ class EventListViewController: UIViewController {
 
     let columns = dbEntry()
     
-    
+    var queryDate = ""
     var commutes: [Commute] = []
     var travelTimes: [Double] = []
     var selectedCommute: Commute?
@@ -120,6 +120,7 @@ class EventListViewController: UIViewController {
         let formatter = DateFormatter()
         formatter.dateStyle = DateFormatter.Style.medium
         formatter.timeStyle = DateFormatter.Style.none
+        print(formatter.string(from: date))
         return formatter.string(from: date)
     }
     
@@ -139,13 +140,19 @@ class EventListViewController: UIViewController {
         return ("\(Int(hours)) hr \(Int(minutes)) min")
     }
 
-   override func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         // list commutes
         commutes = []
-        let today = formatDate(date: Date())
+        // TODO: THIS NEEDS TO REFLECT EITHER THE CURRENT DATE OF THE DATE RETURNED FROM THE CALENAR
+        let today = queryDate == "" ? formatDate(date: Date()) : queryDate
+        print("today: \(today)")
         let commutesToday = commuteTable.filter(columns.dateOfCommute == today)
         do {
-            for commute in try self.database.prepare(commutesToday) {
+            let commutesQuery = try self.database.prepare(commutesToday)
+            var isEmpty = true
+                    
+            for commute in commutesQuery {
+                isEmpty = false
                 var srcAddressDict: [String: String] = [:]
                 var destAddressDict: [String: String] = [:]
 
@@ -176,9 +183,19 @@ class EventListViewController: UIViewController {
                     }
                 }
             }
+            if isEmpty{
+                alertTemplate(msg: "There are no commutes scheduled for this day")
+            }
         } catch {
             print(error)
         }
+    }
+    
+    // generic error handling alert
+    func alertTemplate(msg: String){
+        let alert = UIAlertController(title: "Error", message: msg, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
+        self.present(alert, animated: true)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
