@@ -11,7 +11,9 @@ import MapKit
 
 
 class LocationSearchTableViewController: UITableViewController {
-        
+    
+    
+    @IBOutlet weak var searchBarView: UIView!
     var handleMapSearchDelegate:HandleMapSearch? = nil
     var matchingItems:[MKMapItem] = []
     var mapView: MKMapView? = nil
@@ -37,6 +39,8 @@ class LocationSearchTableViewController: UITableViewController {
         
         // get a reference to the search bar objects associated with the UISearchController
         let searchBar = resultSearchController!.searchBar
+        searchBarView.addSubview(searchBar)
+
         searchBar.sizeToFit()
         searchBar.placeholder = "Search for a location"
         
@@ -117,9 +121,12 @@ extension LocationSearchTableViewController {
 
         // Configure the cell...
         let selectedItem = matchingItems[indexPath.row].placemark
-        cell.textLabel?.text = selectedItem.name
-        cell.detailTextLabel?.text = parseAddress(selectedItem: selectedItem)
-
+        
+        let titleLabel = cell.viewWithTag(1) as! UILabel
+        titleLabel.text = selectedItem.name
+        let subtitleLabel = cell.viewWithTag(2) as! UILabel
+        subtitleLabel.text = parseAddress(selectedItem: selectedItem)
+        
         return cell
     }
     
@@ -130,5 +137,9 @@ extension LocationSearchTableViewController {
         let selectedItem = matchingItems[indexPath.row].placemark
         handleMapSearchDelegate?.dropPinZoomIn(placemark: selectedItem)
         self.navigationController?.popToRootViewController(animated: true)
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 75
     }
 }

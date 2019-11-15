@@ -10,6 +10,11 @@ import UIKit
 import MapKit
 import SQLite
 import CoreLocation
+// ==============================================================================================================================================
+import UserNotifications
+import NotificationCenter
+// ==============================================================================================================================================
+
 
 protocol HandleMapSearch {
     func dropPinZoomIn(placemark:MKPlacemark)
@@ -32,6 +37,12 @@ class FirstViewController : UIViewController{
     @IBOutlet weak var eventName: UITextField!
     @IBOutlet weak var dateTextField: UITextField!
     @IBOutlet weak var timeTextField: UITextField!
+    
+    // ==============================================================================================================================================
+    // To move the view up - Mustafa
+    var isKeyboardAppear = false
+    // ==============================================================================================================================================
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,8 +83,49 @@ class FirstViewController : UIViewController{
         } catch {
             print(error)
         }
+        
+        // ==============================================================================================================================================
+        // To move the View Up when the keyboard is present in the view - Mustafa
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        // ==============================================================================================================================================
+
     }
     
+    
+    
+    // ==============================================================================================================================================
+
+    // To move the View Up when the keyboard is present in the view - Mustafa
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if !isKeyboardAppear {
+            if ((notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue) != nil {
+                if self.view.frame.origin.y == 0 {
+                    self.view.frame.origin.y -= 60
+                }
+            }
+            isKeyboardAppear = true
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if isKeyboardAppear {
+            if ((notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue) != nil {
+                if self.view.frame.origin.y != 0{
+                    self.view.frame.origin.y = 0
+                }
+            }
+            isKeyboardAppear = false
+        }
+    }
+    
+    @objc func dismissKeyboard() {
+        //Causes the view (or one of its embedded text fields) to resign the first responder status.
+        view.endEditing(true)
+    }
+    
+    
+    // ==============================================================================================================================================
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toSearchResults" {

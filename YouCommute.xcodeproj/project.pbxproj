@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4507E624237E6477001EB690 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4507E623237E6477001EB690 /* Assets.xcassets */; };
 		60D4D69DD29DF234867F6B73 /* Pods_YouCommute.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFE8A33478491D89EEACAB2A /* Pods_YouCommute.framework */; };
 		DE3BB9E7760B7C9CB669505A /* Pods_YouCommuteTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1445A95388F6A076775A8F6 /* Pods_YouCommuteTests.framework */; };
 		E2723C0F236A8BD900352343 /* LocationSearchTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2723C0E236A8BD900352343 /* LocationSearchTableViewController.swift */; };
@@ -16,7 +17,6 @@
 		E2CE2598235D168600362849 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CE2597235D168600362849 /* FirstViewController.swift */; };
 		E2CE259A235D168600362849 /* EventListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CE2599235D168600362849 /* EventListViewController.swift */; };
 		E2CE259D235D168600362849 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E2CE259B235D168600362849 /* Main.storyboard */; };
-		E2CE259F235D168900362849 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2CE259E235D168900362849 /* Assets.xcassets */; };
 		E2CE25A2235D168900362849 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E2CE25A0235D168900362849 /* LaunchScreen.storyboard */; };
 		E2CE25AD235D168A00362849 /* YouCommuteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CE25AC235D168A00362849 /* YouCommuteTests.swift */; };
 		E2CE25BA235D229900362849 /* EventDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CE25B9235D229900362849 /* EventDetailsViewController.swift */; };
@@ -46,6 +46,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4507E623237E6477001EB690 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1445A95388F6A076775A8F6 /* Pods_YouCommuteTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YouCommuteTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE8F820898FE8D786EF08408 /* Pods-YouCommute.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YouCommute.release.xcconfig"; path = "Target Support Files/Pods-YouCommute/Pods-YouCommute.release.xcconfig"; sourceTree = "<group>"; };
 		AFE8A33478491D89EEACAB2A /* Pods_YouCommute.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YouCommute.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -58,7 +59,6 @@
 		E2CE2597235D168600362849 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
 		E2CE2599235D168600362849 /* EventListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListViewController.swift; sourceTree = "<group>"; };
 		E2CE259C235D168600362849 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		E2CE259E235D168900362849 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E2CE25A1235D168900362849 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E2CE25A3235D168900362849 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E2CE25A8235D168A00362849 /* YouCommuteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YouCommuteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -133,7 +133,7 @@
 				E2723C0E236A8BD900352343 /* LocationSearchTableViewController.swift */,
 				E2CC4B8723747BB100451EB7 /* CalendarViewController.swift */,
 				E2CE2595235D168600362849 /* SceneDelegate.swift */,
-				E2CE259E235D168900362849 /* Assets.xcassets */,
+				4507E623237E6477001EB690 /* Assets.xcassets */,
 				E2CE25A3235D168900362849 /* Info.plist */,
 			);
 			path = YouCommute;
@@ -244,7 +244,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E2CE25A2235D168900362849 /* LaunchScreen.storyboard in Resources */,
-				E2CE259F235D168900362849 /* Assets.xcassets in Resources */,
+				4507E624237E6477001EB690 /* Assets.xcassets in Resources */,
 				E2CE259D235D168600362849 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -425,7 +425,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -479,7 +479,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -497,7 +497,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Y36668R92H;
 				INFOPLIST_FILE = YouCommute/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -517,7 +517,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Y36668R92H;
 				INFOPLIST_FILE = YouCommute/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
