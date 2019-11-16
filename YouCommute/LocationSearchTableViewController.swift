@@ -13,7 +13,6 @@ import MapKit
 class LocationSearchTableViewController: UITableViewController {
     
     
-    @IBOutlet weak var searchBarView: UIView!
     var handleMapSearchDelegate:HandleMapSearch? = nil
     var matchingItems:[MKMapItem] = []
     var mapView: MKMapView? = nil
@@ -39,7 +38,6 @@ class LocationSearchTableViewController: UITableViewController {
         
         // get a reference to the search bar objects associated with the UISearchController
         let searchBar = resultSearchController!.searchBar
-        searchBarView.addSubview(searchBar)
 
         searchBar.sizeToFit()
         searchBar.placeholder = "Search for a location"
