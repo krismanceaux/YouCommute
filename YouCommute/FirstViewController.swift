@@ -129,6 +129,9 @@ class FirstViewController : UIViewController{
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toSearchResults" {
+            let backItem = UIBarButtonItem()
+            backItem.title = "Post"
+            navigationItem.backBarButtonItem = backItem
             
             let locationSearchTable = segue.destination as! LocationSearchTableViewController
             locationSearchTable.mapView = self.mapView
@@ -142,11 +145,22 @@ class FirstViewController : UIViewController{
         performSegue(withIdentifier: "toSearchResults", sender: self)
 
     }
-  
+    @IBAction func fromTextFieldDidBeginEditing(_ sender: UITextField) {
+        self.isSource = true
+        performSegue(withIdentifier: "toSearchResults", sender: self)
+        self.fromTextField.endEditing(true)
+    }
+    
     // segues to the table view controller that displays the search results
     @IBAction func getToLocation(_ sender: Any) {
         self.isSource = false
         performSegue(withIdentifier: "toSearchResults", sender: self)
+    }
+    @IBAction func toTextFieldDidBeginEditing(_ sender: UITextField) {
+        self.isSource = false
+        performSegue(withIdentifier: "toSearchResults", sender: self)
+        self.toTextField.endEditing(true)
+
     }
     
     // generic error handling alert
