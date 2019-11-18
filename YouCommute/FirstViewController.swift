@@ -30,6 +30,10 @@ class FirstViewController : UIViewController{
     var destination: MKPlacemark? = nil
     var source: MKPlacemark? = nil
     var isSource = false
+    
+    var currentLocation: CLLocation?
+    var isSrcCurrentLoc = false
+    
     let clManager = CLLocationManager()
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var fromTextField: UITextField!
@@ -298,6 +302,7 @@ extension FirstViewController: CLLocationManagerDelegate{
     // updates the map to the user's location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.first {
+            self.currentLocation = location
             let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
             let region = MKCoordinateRegion(center: location.coordinate, span: span)
             mapView.setRegion(region, animated: true)
@@ -316,6 +321,11 @@ extension FirstViewController: HandleMapSearch {
         if isSource{
             self.source = placemark
             fromTextField.text = placemark.title
+            if self.currentLocation != nil{
+                
+                self.isSrcCurrentLoc = (placemark.coordinate.latitude == self.currentLocation!.coordinate.latitude) && (placemark.coordinate.longitude ==  self.currentLocation!.coordinate.longitude) ? true : false
+        
+            }
         }
         else{
             self.destination = placemark
