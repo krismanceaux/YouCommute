@@ -193,8 +193,15 @@ class FirstViewController : UIViewController{
 //        eventListVC.commutes.append(Commute(source: self.source!, destination: self.destination!, eventName: eventName.text!, arrivalTime: timeTextField.text!, dateOfCommute: dateTextField.text!))
 //
         
-        let insertCommute = self.commuteTable.insert(self.columns.arrivalTime <- timeTextField.text!, self.columns.dateOfCommute <- dateTextField.text!, self.columns.destLat <- (destination?.coordinate.latitude)!, self.columns.destLong <- (destination?.coordinate.longitude)!, self.columns.eventName <- (eventName.text!), self.columns.srcLat <- (source?.coordinate.latitude)!, self.columns.srcLong <- (source?.coordinate.longitude)!)
-
+        let insertCommute = self.commuteTable.insert(
+            self.columns.arrivalTime <- timeTextField.text!,
+            self.columns.dateOfCommute <- dateTextField.text!,
+            self.columns.destLat <- (destination?.coordinate.latitude)!,
+            self.columns.destLong <- (destination?.coordinate.longitude)!,
+            self.columns.eventName <- (eventName.text!),
+            self.columns.srcLat <- (source?.coordinate.latitude)!,
+            self.columns.srcLong <- (source?.coordinate.longitude)!,
+            self.columns.isSrcCurrentLoc <- (isSrcCurrentLoc))
         do {
             try self.database.run(insertCommute)
             print("INSERTED COMMUTE")
@@ -202,7 +209,8 @@ class FirstViewController : UIViewController{
             print(error)
         }
         
-        // Clear input fields before switching back to
+        // Clear input fields before switching back to\
+        isSrcCurrentLoc = false
         fromTextField.text = ""
         toTextField.text = ""
         eventName.text = ""

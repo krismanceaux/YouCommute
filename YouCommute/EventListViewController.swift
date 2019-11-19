@@ -20,6 +20,8 @@ struct Commute{
     var arrivalTime: String
     var dateOfCommute: String
     
+
+    
     init(source: MKPlacemark, destination: MKPlacemark, eventName: String, arrivalTime: String, dateOfCommute: String) {
         self.source = MKMapItem(placemark: source)
         self.destination = MKMapItem(placemark: destination)
@@ -46,12 +48,17 @@ struct dbEntry{
     let srcLat = Expression<Double>("srcLat")
     let arrivalTime = Expression<String>("arrivalTime")
     let dateOfCommute = Expression<String>("dateOfCommute")
+    let isSrcCurrentLoc = Expression<Bool>("isSrcCurrentLoc")
 //    let srcAddress =
 }
 
 class EventListViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
+    
+    let clManager = CLLocationManager()
+    var currentLocation: CLLocation?
+
     var database: Connection!
     let commuteTable = Table("commute")
 
@@ -71,6 +78,10 @@ class EventListViewController: UIViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
 
+        clManager.delegate = self
+        clManager.desiredAccuracy = kCLLocationAccuracyBest
+        clManager.requestWhenInUseAuthorization()
+        
         do {
             let documentDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             let fileUrl = documentDirectory.appendingPathComponent("users").appendingPathExtension("sqlite3")
@@ -95,6 +106,7 @@ class EventListViewController: UIViewController {
             table.column(self.columns.srcLong)
             table.column(self.columns.arrivalTime)
             table.column(self.columns.dateOfCommute)
+            table.column(self.columns.isSrcCurrentLoc)
         }
 
         do {
@@ -140,7 +152,8 @@ class EventListViewController: UIViewController {
         return ("\(Int(hours)) hr \(Int(minutes)) min")
     }
 
-    override func viewDidAppear(_ animated: Bool) {
+    
+    func getPlacemarksFromCoordinates(){
         // list commutes
         commutes = []
         // TODO: THIS NEEDS TO REFLECT EITHER THE CURRENT DATE OF THE DATE RETURNED FROM THE CALENAR
@@ -150,13 +163,24 @@ class EventListViewController: UIViewController {
         do {
             let commutesQuery = try self.database.prepare(commutesToday)
             var isEmpty = true
-                    
+                   
             for commute in commutesQuery {
                 isEmpty = false
                 var srcAddressDict: [String: String] = [:]
                 var destAddressDict: [String: String] = [:]
+                
+            
+            
+                if commute[self.columns.isSrcCurrentLoc] {
+                    // REQUEST THE USERS CURRENT LOCATION TO GET THE COORDINATES
+                    clManager.requestLocation()
+                }
 
-                let srcLocation = CLLocation(latitude: commute[self.columns.srcLat], longitude: commute[self.columns.srcLong])
+                let srcLocation = commute[self.columns.isSrcCurrentLoc] && currentLocation != nil ?
+                    CLLocation(latitude: currentLocation!.coordinate.latitude, longitude: currentLocation!.coordinate.longitude) :
+                    CLLocation(latitude: commute[self.columns.srcLat], longitude: commute[self.columns.srcLong])
+                
+                
                 let destLocation = CLLocation(latitude: commute[self.columns.destLat], longitude: commute[self.columns.destLong])
                 
                 CLGeocoder().reverseGeocodeLocation(srcLocation){ (placemark, error) in
@@ -172,7 +196,11 @@ class EventListViewController: UIViewController {
                             }
                             if let place = placemark?[0] {
                                 destAddressDict = [CNPostalAddressStreetKey: place.name!, CNPostalAddressCityKey: place.locality!, CNPostalAddressPostalCodeKey: place.postalCode!, CNPostalAddressISOCountryCodeKey: place.isoCountryCode!]
-                                let srcCoordinates = CLLocationCoordinate2DMake(commute[self.columns.srcLat], commute[self.columns.srcLong])
+                                let srcCoordinates = commute[self.columns.isSrcCurrentLoc] && self.currentLocation != nil ?
+                                    CLLocationCoordinate2DMake(self.currentLocation!.coordinate.latitude, self.currentLocation!.coordinate.longitude) :
+                                    CLLocationCoordinate2DMake(commute[self.columns.srcLat], commute[self.columns.srcLong])
+                                
+                                
                                 let destCoordinates = CLLocationCoordinate2DMake(commute[self.columns.destLat], commute[self.columns.destLong])
                                 let com = Commute(source: MKPlacemark(coordinate: srcCoordinates, addressDictionary: srcAddressDict), destination: MKPlacemark(coordinate: destCoordinates, addressDictionary: destAddressDict), eventName: commute[self.columns.eventName], arrivalTime: commute[self.columns.arrivalTime], dateOfCommute: commute[self.columns.dateOfCommute])
                                 self.commutes.append(com)
@@ -182,13 +210,20 @@ class EventListViewController: UIViewController {
                         }
                     }
                 }
-            }
-            if isEmpty{
-                alertTemplate(msg: "There are no commutes scheduled for this day")
-            }
+                
+               
+           }
+           if isEmpty{
+               alertTemplate(msg: "There are no commutes scheduled for this day")
+           }
         } catch {
-            print(error)
+           print(error)
         }
+    }
+    
+    
+    override func viewDidAppear(_ animated: Bool) {
+       getPlacemarksFromCoordinates()
     }
     
     // generic error handling alert
@@ -240,5 +275,28 @@ extension EventListViewController: UITableViewDataSource, UITableViewDelegate {
         let eventNameLabel = cell.viewWithTag(2) as! UILabel
         eventNameLabel.text = commutes[indexPath.row].eventName
         return cell
+    }
+}
+
+extension EventListViewController: CLLocationManagerDelegate{
+    
+    // Handles errors. This will throw a runtime error if it is not implmented
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Error: \(error)")
+    }
+    
+    // requests user's current location after allowing the app to use the current location
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if status == .authorizedWhenInUse {
+            clManager.requestLocation()
+        }
+    }
+    
+    // updates the map to the user's location
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.first {
+            self.currentLocation = location
+            
+        }
     }
 }
