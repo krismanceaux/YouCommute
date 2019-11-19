@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 
 class EventDetailsViewController: UIViewController {
-
+    
     var commute: Commute?
     var travelTime: Double = 0.0
     
@@ -33,7 +33,8 @@ class EventDetailsViewController: UIViewController {
         self.whenToLeave.text = formatTime(time: self.travelTime)
         
     }
-    @IBAction func openActionSheet(_ sender: UIBarButtonItem) {
+    
+    @IBAction func listButtonUIBar(_ sender: Any) {
         // Function body goes here
         let sheet = UIAlertController(title: "Actions", message: "Select one", preferredStyle: .actionSheet)
         
@@ -48,6 +49,11 @@ class EventDetailsViewController: UIViewController {
         self.present(sheet, animated: true, completion: nil)
     }
     
+    
+//    @IBAction func openActionSheet(_ sender: UIBarButtonItem) {
+//
+//    }
+    
     func formatTime(time: Double) -> String {
         // get the number of hours
         let hours = floor(time / 3600)
@@ -55,7 +61,7 @@ class EventDetailsViewController: UIViewController {
         // get the number of minutes
         let minutes = floor(remainingSeconds / 60)
         remainingSeconds = remainingSeconds - (60 * minutes)
-
+        
         var time1Arr = commute?.arrivalTime.split(separator: " ")
         let timeArr = time1Arr![0].split(separator: ":")
         let arrivalHour = Double(timeArr[0])
@@ -87,13 +93,13 @@ class EventDetailsViewController: UIViewController {
         return "\(Int(leaveHour)):\(Int(leaveMin)) \(time1Arr![1])"
     }
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destination.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
 }

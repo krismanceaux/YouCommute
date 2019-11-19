@@ -90,6 +90,7 @@ extension CalendarViewController:FSCalendarDataSource,FSCalendarDelegate{
         let navC = self.tabBarController!.viewControllers![0] as! UINavigationController
         let eventList = navC.viewControllers[0] as! EventListViewController
         eventList.queryDate = formatDate(date: (date.datatypeValue))
+        print("query date from the calendar: \(formatDate(date: (date.datatypeValue)))")
         self.tabBarController!.selectedIndex = 0
     }
     

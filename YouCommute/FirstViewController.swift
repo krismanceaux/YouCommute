@@ -10,6 +10,11 @@ import UIKit
 import MapKit
 import SQLite
 import CoreLocation
+// ==============================================================================================================================================
+import UserNotifications
+import NotificationCenter
+// ==============================================================================================================================================
+
 
 protocol HandleMapSearch {
     func dropPinZoomIn(placemark:MKPlacemark)
@@ -25,6 +30,10 @@ class FirstViewController : UIViewController{
     var destination: MKPlacemark? = nil
     var source: MKPlacemark? = nil
     var isSource = false
+    
+    var currentLocation: CLLocation?
+    var isSrcCurrentLoc = false
+    
     let clManager = CLLocationManager()
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var fromTextField: UITextField!
@@ -32,6 +41,12 @@ class FirstViewController : UIViewController{
     @IBOutlet weak var eventName: UITextField!
     @IBOutlet weak var dateTextField: UITextField!
     @IBOutlet weak var timeTextField: UITextField!
+    
+    // ==============================================================================================================================================
+    // To move the view up - Mustafa
+    var isKeyboardAppear = false
+    // ==============================================================================================================================================
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,11 +87,55 @@ class FirstViewController : UIViewController{
         } catch {
             print(error)
         }
+        
+        // ==============================================================================================================================================
+        // To move the View Up when the keyboard is present in the view - Mustafa
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        // ==============================================================================================================================================
+
     }
     
     
+    
+    // ==============================================================================================================================================
+
+    // To move the View Up when the keyboard is present in the view - Mustafa
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if !isKeyboardAppear {
+            if ((notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue) != nil {
+                if self.view.frame.origin.y == 0 {
+                    self.view.frame.origin.y -= 60
+                }
+            }
+            isKeyboardAppear = true
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if isKeyboardAppear {
+            if ((notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue) != nil {
+                if self.view.frame.origin.y != 0{
+                    self.view.frame.origin.y = 0
+                }
+            }
+            isKeyboardAppear = false
+        }
+    }
+    
+    @objc func dismissKeyboard() {
+        //Causes the view (or one of its embedded text fields) to resign the first responder status.
+        view.endEditing(true)
+    }
+    
+    
+    // ==============================================================================================================================================
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toSearchResults" {
+            let backItem = UIBarButtonItem()
+            backItem.title = "Post"
+            navigationItem.backBarButtonItem = backItem
             
             let locationSearchTable = segue.destination as! LocationSearchTableViewController
             locationSearchTable.mapView = self.mapView
@@ -90,11 +149,22 @@ class FirstViewController : UIViewController{
         performSegue(withIdentifier: "toSearchResults", sender: self)
 
     }
-  
+    @IBAction func fromTextFieldDidBeginEditing(_ sender: UITextField) {
+        self.isSource = true
+        performSegue(withIdentifier: "toSearchResults", sender: self)
+        self.fromTextField.endEditing(true)
+    }
+    
     // segues to the table view controller that displays the search results
     @IBAction func getToLocation(_ sender: Any) {
         self.isSource = false
         performSegue(withIdentifier: "toSearchResults", sender: self)
+    }
+    @IBAction func toTextFieldDidBeginEditing(_ sender: UITextField) {
+        self.isSource = false
+        performSegue(withIdentifier: "toSearchResults", sender: self)
+        self.toTextField.endEditing(true)
+
     }
     
     // generic error handling alert
@@ -123,8 +193,15 @@ class FirstViewController : UIViewController{
 //        eventListVC.commutes.append(Commute(source: self.source!, destination: self.destination!, eventName: eventName.text!, arrivalTime: timeTextField.text!, dateOfCommute: dateTextField.text!))
 //
         
-        let insertCommute = self.commuteTable.insert(self.columns.arrivalTime <- timeTextField.text!, self.columns.dateOfCommute <- dateTextField.text!, self.columns.destLat <- (destination?.coordinate.latitude)!, self.columns.destLong <- (destination?.coordinate.longitude)!, self.columns.eventName <- (eventName.text!), self.columns.srcLat <- (source?.coordinate.latitude)!, self.columns.srcLong <- (source?.coordinate.longitude)!)
-
+        let insertCommute = self.commuteTable.insert(
+            self.columns.arrivalTime <- timeTextField.text!,
+            self.columns.dateOfCommute <- dateTextField.text!,
+            self.columns.destLat <- (destination?.coordinate.latitude)!,
+            self.columns.destLong <- (destination?.coordinate.longitude)!,
+            self.columns.eventName <- (eventName.text!),
+            self.columns.srcLat <- (source?.coordinate.latitude)!,
+            self.columns.srcLong <- (source?.coordinate.longitude)!,
+            self.columns.isSrcCurrentLoc <- (isSrcCurrentLoc))
         do {
             try self.database.run(insertCommute)
             print("INSERTED COMMUTE")
@@ -132,7 +209,8 @@ class FirstViewController : UIViewController{
             print(error)
         }
         
-        // Clear input fields before switching back to
+        // Clear input fields before switching back to\
+        isSrcCurrentLoc = false
         fromTextField.text = ""
         toTextField.text = ""
         eventName.text = ""
@@ -232,6 +310,7 @@ extension FirstViewController: CLLocationManagerDelegate{
     // updates the map to the user's location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.first {
+            self.currentLocation = location
             let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
             let region = MKCoordinateRegion(center: location.coordinate, span: span)
             mapView.setRegion(region, animated: true)
@@ -250,6 +329,11 @@ extension FirstViewController: HandleMapSearch {
         if isSource{
             self.source = placemark
             fromTextField.text = placemark.title
+            if self.currentLocation != nil{
+                
+                self.isSrcCurrentLoc = (placemark.coordinate.latitude == self.currentLocation!.coordinate.latitude) && (placemark.coordinate.longitude ==  self.currentLocation!.coordinate.longitude) ? true : false
+        
+            }
         }
         else{
             self.destination = placemark
