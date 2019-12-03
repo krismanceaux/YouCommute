@@ -8,11 +8,27 @@
 
 import UIKit
 import MapKit
+import MessageUI
 
-class EventDetailsViewController: UIViewController {
+class EventDetailsViewController: UIViewController, MFMessageComposeViewControllerDelegate {
+    
+    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+        switch result{
+        case .cancelled:
+            dismiss(animated: true, completion: nil)
+        case .failed:
+            dismiss(animated: true, completion: nil)
+        case .sent:
+            dismiss(animated: true, completion: nil)
+        default:
+            dismiss(animated: true, completion: nil)
+        }
+    }
+    
     
     var commute: Commute?
     var travelTime: Double = 0.0
+    let composeVC = MFMessageComposeViewController()
     
     @IBOutlet weak var whenToLeave: UILabel!
     @IBOutlet weak var dateOfCommute: UITextField!
@@ -34,6 +50,23 @@ class EventDetailsViewController: UIViewController {
         
     }
     
+    func showTextMessage(){
+        if MFMessageComposeViewController.canSendText() {
+            self.composeVC.messageComposeDelegate = self
+            
+            // Configure the fields of the interface.
+            //self.composeVC.recipients = ["4085551212"]
+            self.composeVC.body = "My drive to \(self.commute?.destination?.name ?? "the destination") will take \(self.travelTime) seconds. Sent from YouCommute."
+            
+            
+            // Present the view controller modally.
+            self.present(self.composeVC, animated: true, completion: nil)
+            
+        } else {
+            print("SMS services are not available")
+        }
+    }
+    
     @IBAction func listButtonUIBar(_ sender: Any) {
         // Function body goes here
         let sheet = UIAlertController(title: "Actions", message: "Select one", preferredStyle: .actionSheet)
@@ -42,6 +75,10 @@ class EventDetailsViewController: UIViewController {
             let mapItem = MKMapItem(placemark: self.commute!.destination!.placemark)
             let launchOptions = [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeDriving]
             mapItem.openInMaps(launchOptions: launchOptions)
+        }))
+        
+        sheet.addAction(UIAlertAction(title: "Send Text Status", style: .default, handler: { (_) in
+            self.showTextMessage()
         }))
         
         sheet.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
@@ -92,6 +129,11 @@ class EventDetailsViewController: UIViewController {
         }
         return "\(Int(leaveHour)):\(Int(leaveMin)) \(time1Arr![1])"
     }
+    
+    
+    
+    
+    
     /*
      // MARK: - Navigation
      

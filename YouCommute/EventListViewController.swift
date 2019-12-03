@@ -90,6 +90,8 @@ class EventListViewController: UIViewController {
         } catch {
             print(error)
         }
+        
+        
 //        do{
 //            try database.run(commuteTable.drop(ifExists: true))
 //        } catch {
