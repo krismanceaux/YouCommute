@@ -9,6 +9,8 @@
 import UIKit
 import MapKit
 import MessageUI
+import CoreLocation
+
 
 class EventDetailsViewController: UIViewController, MFMessageComposeViewControllerDelegate {
     
@@ -29,6 +31,7 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
     var commute: Commute?
     var travelTime: Double = 0.0
     let composeVC = MFMessageComposeViewController()
+    let clManager = CLLocationManager()
     
     @IBOutlet weak var whenToLeave: UILabel!
     @IBOutlet weak var dateOfCommute: UITextField!
@@ -52,12 +55,27 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
     
     func showTextMessage(){
         if MFMessageComposeViewController.canSendText() {
-            self.composeVC.messageComposeDelegate = self
             
+            // TODO
+            // get current location clplacemark
+            
+            // convert to mapkit placemark
+            
+            // call getETA function
+            
+            self.composeVC.messageComposeDelegate = self
+            let formattedTravelTime = formatTravelTime(timeInSeconds: self.travelTime)
             // Configure the fields of the interface.
             //self.composeVC.recipients = ["4085551212"]
-            self.composeVC.body = "My drive to \(self.commute?.destination?.name ?? "the destination") will take \(self.travelTime) seconds. Sent from YouCommute."
-            
+            if formattedTravelTime.0 > 1  {
+                self.composeVC.body = "My drive to \(self.commute?.destination?.name ?? "our destination") will take \(formattedTravelTime.0) hours and \(formattedTravelTime.1) minutes.\nSent from YouCommute."
+            }
+            else if formattedTravelTime.0 == 1 {
+                self.composeVC.body = "My drive to \(self.commute?.destination?.name ?? "our destination") will take \(formattedTravelTime.0) hour and \(formattedTravelTime.1) minutes.\nSent from YouCommute."
+            }
+            else {
+                self.composeVC.body = "My drive to \(self.commute?.destination?.name ?? "our destination") will take \(formattedTravelTime.1) minutes.\nSent from YouCommute."
+            }
             
             // Present the view controller modally.
             self.present(self.composeVC, animated: true, completion: nil)
@@ -85,19 +103,23 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
         
         self.present(sheet, animated: true, completion: nil)
     }
-    
-    
-//    @IBAction func openActionSheet(_ sender: UIBarButtonItem) {
-//
-//    }
-    
-    func formatTime(time: Double) -> String {
+       
+    func formatTravelTime(timeInSeconds: Double) -> (Double, Double, Double){
         // get the number of hours
-        let hours = floor(time / 3600)
-        var remainingSeconds = time - (3600 * hours)
+        let hours = floor(timeInSeconds / 3600)
+        var remainingSeconds = timeInSeconds - (3600 * hours)
         // get the number of minutes
         let minutes = floor(remainingSeconds / 60)
         remainingSeconds = remainingSeconds - (60 * minutes)
+        
+        return (hours, minutes, remainingSeconds)
+    }
+    
+    func formatTime(time: Double) -> String {
+       
+        let hr_min_sec = formatTravelTime(timeInSeconds: time)
+        let hours = hr_min_sec.0
+        let minutes = hr_min_sec.1
         
         var time1Arr = commute?.arrivalTime.split(separator: " ")
         let timeArr = time1Arr![0].split(separator: ":")
@@ -129,19 +151,5 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
         }
         return "\(Int(leaveHour)):\(Int(leaveMin)) \(time1Arr![1])"
     }
-    
-    
-    
-    
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destination.
-     // Pass the selected object to the new view controller.
-     }
-     */
     
 }
