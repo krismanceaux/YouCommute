@@ -8,44 +8,63 @@
 
 import UIKit
 import FSCalendar
+import SQLite
+
 
 class CalendarViewController: UIViewController {
-    fileprivate weak var calendar: FSCalendar!
     
-
+    @IBOutlet weak var calendar_view: FSCalendar!
+    var database: Connection!
+    public var events = [String]()
+    
     override func viewDidLoad() {
-        
-        
-        let calendar = FSCalendar(frame: CGRect(x: 0, y: 0, width: 320, height: 300))
-        calendar.translatesAutoresizingMaskIntoConstraints = false
-        calendar.dataSource = self
-        calendar.delegate = self
-        view.addSubview(calendar)
-        
-        
-        //Apperence//
-        calendar.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        calendar.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        calendar.heightAnchor.constraint(equalToConstant: view.frame.height).isActive = true
-        calendar.widthAnchor.constraint(equalToConstant: view.frame.width).isActive = true
-        calendar.allowsMultipleSelection = false
-        
-        ///
-        calendar.appearance.headerMinimumDissolvedAlpha = 0.0
-        calendar.clipsToBounds = true
-        calendar.appearance.weekdayTextColor = UIColor.red
-        calendar.appearance.headerTitleColor=UIColor.red
-        calendar.appearance.selectionColor=UIColor.blue
-//        calendar.register(FSCalendarCell.self, forCellReuseIdentifier: "CELL")
-        
-        self.calendar = calendar
+        do {
+            let documentDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            let fileUrl = documentDirectory.appendingPathComponent("users").appendingPathExtension("sqlite3")
+            let database = try Connection(fileUrl.path)
+            self.database = database
+        } catch {
+            print(error)
+        }
+        calendar_view.appearance.headerMinimumDissolvedAlpha = 0.0
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        let col = dbEntry()
+        let commuteTable = Table("commute")
+        let query =  commuteTable.select(col.dateOfCommute)
+        do{
+            let dateTable =  try self.database.prepare(query)
+            for i in dateTable
+            {
+                var finaldates = Date()
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "MM-dd-yyyy"
+                finaldates = dateFormatter.date(from: try i.get(col.dateOfCommute))!
+                dateFormatter.dateFormat = "yyyy-MM-dd"
+                if(!events.contains(dateFormatter.string(from: finaldates)))
+                {
+                    events.append(dateFormatter.string(from: finaldates))
+                }
+                calendar_view.reloadData()
+            }
+        }
+        catch{
+            print("error")
+        }
+    }
+    
+    fileprivate lazy var dateFormatter2: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
     
     func formatDate(date: String) -> String {
         let dateTimeArray = date.components( separatedBy: "T")
         let dateArray = dateTimeArray[0].components(separatedBy: "-")
         return buildDate(dateArray: dateArray)
-    }
+            }
    
     func buildDate(dateArray: [String]) -> String{
         var month = ""
@@ -92,10 +111,16 @@ extension CalendarViewController:FSCalendarDataSource,FSCalendarDelegate{
         eventList.queryDate = formatDate(date: (date.datatypeValue))
         print("query date from the calendar: \(formatDate(date: (date.datatypeValue)))")
         self.tabBarController!.selectedIndex = 0
+
     }
     
     func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
-        return 1
+        let dateString = self.dateFormatter2.string(from: date)
+        
+        if self.events.contains(dateString) {
+            return 1
+        }
+        return 0
     }
+    
 }
-   
