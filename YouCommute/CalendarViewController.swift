@@ -9,11 +9,47 @@
 import UIKit
 import FSCalendar
 import SQLite
-
+import EventKit
 
 class CalendarViewController: UIViewController {
     
     @IBOutlet weak var calendar_view: FSCalendar!
+    
+    @IBAction func integrate(_ sender: UIButton) {
+        let val = true
+        print(val)
+        if val{
+            var titles : [String] = []
+            var startDates : [NSDate] = []
+            var endDates : [NSDate] = []
+
+            let eventStore = EKEventStore()
+            let calendars = eventStore.calendars(for: .event)
+
+            for calendar in calendars {
+                if calendar.title == "Work" {
+
+                    let oneMonthAgo = NSDate(timeIntervalSinceNow: -30*24*3600)
+                    let oneMonthAfter = NSDate(timeIntervalSinceNow: +30*24*3600)
+
+                    let predicate = eventStore.predicateForEvents(withStart: oneMonthAgo as Date, end: oneMonthAfter as Date, calendars: [calendar])
+
+                    let events = eventStore.events(matching: predicate)
+
+                    for event in events {
+                        titles.append(event.title)
+                        startDates.append(event.startDate! as NSDate)
+                        endDates.append(event.endDate! as NSDate)
+//                        print(events)
+//                        print(startDates)
+//                        print(endDates)
+                    }
+                }
+            }
+        }
+
+    }
+    
     var database: Connection!
     public var events = [String]()
     
@@ -97,7 +133,8 @@ class CalendarViewController: UIViewController {
             month = "Mystery Month"
         }
         
-        return "\(month) \(dateArray[2]), \(dateArray[0])"
+        let day = Int(dateArray[2])
+        return "\(month) \(day!), \(dateArray[0])"
     }
     
 }
