@@ -187,12 +187,7 @@ class FirstViewController : UIViewController{
             alertTemplate(msg: "Either the destination or starting point is not a valid address. Please use the \"From\" and \"To\" buttons to lookup the address.")
             return
         }
-        
-//        let navVC = self.tabBarController?.viewControllers![0] as! UINavigationController
-//        let eventListVC = navVC.viewControllers.first as! EventListViewController
-//        eventListVC.commutes.append(Commute(source: self.source!, destination: self.destination!, eventName: eventName.text!, arrivalTime: timeTextField.text!, dateOfCommute: dateTextField.text!))
-//
-        
+   
         let insertCommute = self.commuteTable.insert(
             self.columns.arrivalTime <- timeTextField.text!,
             self.columns.dateOfCommute <- dateTextField.text!,
@@ -208,19 +203,111 @@ class FirstViewController : UIViewController{
         } catch {
             print(error)
         }
+        print("time text")
+        print(timeTextField.text!)
+        // create notification for the date that the commute is on
+        let notificationManager = NotificationManager()
+        // NEED TO GET THE ETA, AND THE TIME WE HAVE TO LEAVE BY FROM EVENTLISTVIEWCONTROLLER AND EVENTDETAILVIEWCONTROLLER
+        
+        let dateText = dateTextField.text!
+        let monthText = dateText.split(separator: " ")[0]
+        let dayTextWithComma = dateText.split(separator: " ")[1]
+        let dayText = dayTextWithComma.split(separator: ",")[0]
+        let yearText = dateText.split(separator: " ")[2]
+        
+        let month = getMonthNumber(month: String(monthText))
+        let day = Int(dayText)
+        let year = Int(yearText)
+        
+        let eventDetailVC = EventDetailsViewController()
+        let commute = Commute(source: self.source!, destination: self.destination!, eventName: eventName.text!, arrivalTime: timeTextField.text!, dateOfCommute: dateTextField.text!)
+        var commuteTime = 0.0
+        commute.directions.calculateETA { (res, err) in
+            guard err == nil, let res = res else {return}
+            commuteTime = res.expectedTravelTime
+
+            
+            let timeToLeave = eventDetailVC.formatTime(time: commuteTime, arrivalTime: commute.arrivalTime)
+            print("time to leave")
+            print(timeToLeave)
+            
+            let timeToLeaveArr = timeToLeave.split(separator: " ")
+            let timeToLeaveArr2 = timeToLeaveArr[0].split(separator: ":")
+            let ttlHr = Int(timeToLeaveArr2[0])
+            let ttlMin = Int(timeToLeaveArr2[1])
+            
+            var milHr = 0
+            if timeToLeaveArr[1] == "AM"{
+                milHr = ttlHr!
+            } else{
+                milHr = ttlHr! + 12
+                if milHr == 24{
+                    milHr = 0
+                }
+            }
+            
+            var dateComponents = DateComponents()
+            dateComponents.year = year!
+            dateComponents.month = month
+            dateComponents.day = day!
+            dateComponents.hour = milHr
+            dateComponents.minute = ttlMin
+            
+            let calendar = Calendar.current
+            let finalDateTime = calendar.date(from: dateComponents)
+            
+            
+            notificationManager.sendNotification(title: commute.eventName, subTitle: "To \(commute.destination!.name ?? "your destination")", body: "It's time to leave!", badge: nil, delayUntilDateTime: dateComponents)
+            
+            
+        }
+        
         
         // Clear input fields before switching back to\
-        isSrcCurrentLoc = false
-        fromTextField.text = ""
-        toTextField.text = ""
-        eventName.text = ""
-        source = nil
-        destination = nil
-        let overlays = mapView.overlays
-        mapView.removeOverlays(overlays)
-        clManager.requestLocation()
+        self.isSrcCurrentLoc = false
+        self.fromTextField.text = ""
+        self.toTextField.text = ""
+        self.eventName.text = ""
+        self.source = nil
+        self.destination = nil
+        let overlays = self.mapView.overlays
+        self.mapView.removeOverlays(overlays)
+        self.clManager.requestLocation()
 
         self.tabBarController!.selectedIndex = 0
+        
+       
+    }
+    
+    func getMonthNumber(month: String) -> Int {
+        switch month {
+        case "Jan":
+            return 1
+        case "Feb":
+            return 2
+        case "Mar":
+            return 3
+        case "Apr":
+            return 4
+        case "May":
+            return 5
+        case "Jun":
+            return 6
+        case "Jul":
+            return 7
+        case "Aug":
+            return 8
+        case "Sep":
+            return 9
+        case "Oct":
+            return 10
+        case "Nov":
+            return 11
+        case "Dec":
+            return 12
+        default:
+            return 1
+        }
     }
     
     @IBAction func previewRoute(_ sender: Any) {

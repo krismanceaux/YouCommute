@@ -11,6 +11,7 @@
 		60D4D69DD29DF234867F6B73 /* Pods_YouCommute.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFE8A33478491D89EEACAB2A /* Pods_YouCommute.framework */; };
 		DE3BB9E7760B7C9CB669505A /* Pods_YouCommuteTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1445A95388F6A076775A8F6 /* Pods_YouCommuteTests.framework */; };
 		E2723C0F236A8BD900352343 /* LocationSearchTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2723C0E236A8BD900352343 /* LocationSearchTableViewController.swift */; };
+		E298F59623977F0A00E01432 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E298F59523977F0A00E01432 /* NotificationManager.swift */; };
 		E2CC4B8823747BB100451EB7 /* CalendarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CC4B8723747BB100451EB7 /* CalendarViewController.swift */; };
 		E2CE2594235D168600362849 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CE2593235D168600362849 /* AppDelegate.swift */; };
 		E2CE2596235D168600362849 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CE2595235D168600362849 /* SceneDelegate.swift */; };
@@ -52,6 +53,7 @@
 		AFE8A33478491D89EEACAB2A /* Pods_YouCommute.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YouCommute.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E224C11C2377AFAB0028D794 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		E2723C0E236A8BD900352343 /* LocationSearchTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSearchTableViewController.swift; sourceTree = "<group>"; };
+		E298F59523977F0A00E01432 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		E2CC4B8723747BB100451EB7 /* CalendarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewController.swift; sourceTree = "<group>"; };
 		E2CE2590235D168600362849 /* YouCommute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YouCommute.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2CE2593235D168600362849 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 				E2CE2595235D168600362849 /* SceneDelegate.swift */,
 				4507E623237E6477001EB690 /* Assets.xcassets */,
 				E2CE25A3235D168900362849 /* Info.plist */,
+				E298F59523977F0A00E01432 /* NotificationManager.swift */,
 			);
 			path = YouCommute;
 			sourceTree = "<group>";
@@ -333,6 +336,7 @@
 				E2CE2594235D168600362849 /* AppDelegate.swift in Sources */,
 				E2723C0F236A8BD900352343 /* LocationSearchTableViewController.swift in Sources */,
 				E2CC4B8823747BB100451EB7 /* CalendarViewController.swift in Sources */,
+				E298F59623977F0A00E01432 /* NotificationManager.swift in Sources */,
 				E2CE2596235D168600362849 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

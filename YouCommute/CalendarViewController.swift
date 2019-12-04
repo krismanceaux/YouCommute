@@ -78,7 +78,9 @@ class CalendarViewController: UIViewController {
             month = "Mystery Month"
         }
         
-        return "\(month) \(dateArray[2]), \(dateArray[0])"
+        let day = Int(dateArray[2])
+        
+        return "\(month) \(day!), \(dateArray[0])"
     }
     
 }

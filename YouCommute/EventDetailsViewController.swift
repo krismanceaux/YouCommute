@@ -49,7 +49,7 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
         self.eventName.text = commute!.eventName
         self.toAddress.text = commute!.destination?.placemark.title
         self.fromAddress.text = commute!.source?.placemark.title
-        self.whenToLeave.text = formatTime(time: self.travelTime)
+        self.whenToLeave.text = formatTime(time: self.travelTime, arrivalTime: nil)
         
     }
     
@@ -115,14 +115,23 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
         return (hours, minutes, remainingSeconds)
     }
     
-    func formatTime(time: Double) -> String {
-       
+    func formatTime(time: Double, arrivalTime: String?) -> String {
+        print(time)
         let hr_min_sec = formatTravelTime(timeInSeconds: time)
         let hours = hr_min_sec.0
         let minutes = hr_min_sec.1
+        var time1Arr = [String.SubSequence]()
+        if let commute = self.commute {
+            time1Arr = commute.arrivalTime.split(separator: " ")
+        }
+        else{
+            time1Arr = arrivalTime!.split(separator: " ")
+        }
         
-        var time1Arr = commute?.arrivalTime.split(separator: " ")
-        let timeArr = time1Arr![0].split(separator: ":")
+        print(hr_min_sec)
+        
+        print(time1Arr)
+        let timeArr = time1Arr[0].split(separator: ":")
         let arrivalHour = Double(timeArr[0])
         let arrivalMinutes = Double(timeArr[1])
         
@@ -136,20 +145,20 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
             }
             if leaveHour < 1{
                 leaveHour=12
-                if time1Arr![1] == "AM"{
-                    time1Arr![1] = "PM"
+                if time1Arr[1] == "AM"{
+                    time1Arr[1] = "PM"
                 }
                 else{
-                    time1Arr![1] = "AM"
+                    time1Arr[1] = "AM"
                 }
             }
             
         }
         
         if leaveMin < 10{
-            return "\(Int(leaveHour)):0\(Int(leaveMin)) \(time1Arr![1])"
+            return "\(Int(leaveHour)):0\(Int(leaveMin)) \(time1Arr[1])"
         }
-        return "\(Int(leaveHour)):\(Int(leaveMin)) \(time1Arr![1])"
+        return "\(Int(leaveHour)):\(Int(leaveMin)) \(time1Arr[1])"
     }
     
 }

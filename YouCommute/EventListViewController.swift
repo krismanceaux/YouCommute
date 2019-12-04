@@ -92,11 +92,11 @@ class EventListViewController: UIViewController {
         }
         
         
-//        do{
-//            try database.run(commuteTable.drop(ifExists: true))
-//        } catch {
-//            print("error")
-//        }
+        do{
+            try database.run(commuteTable.drop(ifExists: true))
+        } catch {
+            print("error")
+        }
 
         let table = self.commuteTable.create(ifNotExists: true) {
             (table) in
@@ -121,6 +121,7 @@ class EventListViewController: UIViewController {
     }
 
     func getETA(direction: MKDirections, cell: UITableViewCell, indexPath:IndexPath) {
+        
         direction.calculateETA { (response, error) in
             guard error == nil, let response = response else {return}
             let travelTimeLabel = cell.viewWithTag(1) as! UILabel
@@ -154,11 +155,10 @@ class EventListViewController: UIViewController {
         return ("\(Int(hours)) hr \(Int(minutes)) min")
     }
 
-    
+    // this function queries for all the commutes for today's date, uses the coordinates to geolocate a placemark, each placemark is put into a commute object, then the commute is appended to a list of commutes which is assigned to the commutes member variable
     func getPlacemarksFromCoordinates(){
         // list commutes
         commutes = []
-        // TODO: THIS NEEDS TO REFLECT EITHER THE CURRENT DATE OF THE DATE RETURNED FROM THE CALENAR
         let today = queryDate == "" ? formatDate(date: Date()) : queryDate
         print("today: \(today)")
         let commutesToday = commuteTable.filter(columns.dateOfCommute == today)
