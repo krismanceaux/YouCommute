@@ -120,6 +120,7 @@ class CalendarViewController: UIViewController {
     
     var database: Connection!
     var eventsio = [String]()
+    @IBOutlet weak var integrateButton: UIButton!
     
     override func viewDidLoad() {
         do {

@@ -123,6 +123,7 @@ class EventListViewController: UIViewController {
         direction.calculateETA { (response, error) in
             guard error == nil, let response = response else {return}
             let travelTimeLabel = cell.viewWithTag(1) as! UILabel
+            
             let tTime = response.expectedTravelTime
             // APPEND HERE
             self.travelTimes.append(tTime)
@@ -239,14 +240,14 @@ class EventListViewController: UIViewController {
         }
     }
     
-    
-    override func viewDidAppear(_ animated: Bool) {
-        //self.tableView.isUserInteractionEnabled = false
+    override func viewWillAppear(_ animated: Bool) {
         self.travelTimes = []
         getPlacemarksFromCoordinates()
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        
         self.tableView.reloadData()
-        //self.view.isUserInteractionEnabled = false
-
+    
     }
     
     
@@ -284,27 +285,21 @@ extension EventListViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
         return self.commutes.count
     }
 
     // TODO: When database is hooked up, this needs to pull commutes for today initially. And every time this view appears it needs to reload its data
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "eventCell", for: indexPath)
-        
+        self.view.isUserInteractionEnabled = false
         getETA(direction: commutes[indexPath.row].directions, cell: cell, indexPath: indexPath)
         let eventNameLabel = cell.viewWithTag(2) as! UILabel
         eventNameLabel.text = commutes[indexPath.row].eventName
-//        let bg = cell.viewWithTag(4)!
-//        bg.layer.cornerRadius = 26;
-//        bg.layer.masksToBounds = true;
-        
-        
+        self.view.isUserInteractionEnabled = true
         return cell
     }
 }

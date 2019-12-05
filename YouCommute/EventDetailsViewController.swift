@@ -27,8 +27,8 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
     
     
     @IBOutlet weak var whenToLeave: UILabel!
-    @IBOutlet weak var dateOfCommute: UITextField!
-    @IBOutlet weak var arrivalTime: UITextField!
+    @IBOutlet weak var dateOfCommute: UILabel!
+    @IBOutlet weak var arrivalTime: UILabel!
     @IBOutlet weak var eventName: UILabel!
     @IBOutlet weak var toAddress: UITextField!
     @IBOutlet weak var fromAddress: UITextField!
