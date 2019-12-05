@@ -227,7 +227,7 @@ class FirstViewController : UIViewController{
             commuteTime = res.expectedTravelTime
 
             
-            let timeToLeave = eventDetailVC.formatTime(time: commuteTime, arrivalTime: commute.arrivalTime)
+            let timeToLeave = eventDetailVC.getTimeToLeave(time: commuteTime, arrivalTime: commute.arrivalTime)
             print("time to leave")
             print(timeToLeave)
             

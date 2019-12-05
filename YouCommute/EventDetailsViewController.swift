@@ -30,8 +30,8 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
     
     var commute: Commute?
     var travelTime: Double = 0.0
-    let composeVC = MFMessageComposeViewController()
     let clManager = CLLocationManager()
+    var currentLocation: CLLocation?
     
     @IBOutlet weak var whenToLeave: UILabel!
     @IBOutlet weak var dateOfCommute: UITextField!
@@ -49,37 +49,56 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
         self.eventName.text = commute!.eventName
         self.toAddress.text = commute!.destination?.placemark.title
         self.fromAddress.text = commute!.source?.placemark.title
-        self.whenToLeave.text = formatTime(time: self.travelTime, arrivalTime: nil)
+        self.whenToLeave.text = getTimeToLeave(time: self.travelTime, arrivalTime: nil)
         
+        
+        // get user location
+        clManager.delegate = self
+        clManager.desiredAccuracy = kCLLocationAccuracyBest
+        //clManager.requestWhenInUseAuthorization()
+        clManager.requestLocation()
     }
     
     func showTextMessage(){
         if MFMessageComposeViewController.canSendText() {
-            
+
             // TODO
             // get current location clplacemark
             
+            
             // convert to mapkit placemark
-            
+            let eventListVC = EventListViewController()
+            let placemark = eventListVC.getPlacemark(location: self.currentLocation!)
+            let currentCommute = Commute(source: placemark, destination: (commute?.destination!.placemark)!, eventName: commute!.eventName, arrivalTime: commute!.arrivalTime, dateOfCommute: commute!.dateOfCommute)
+
             // call getETA function
-            
-            self.composeVC.messageComposeDelegate = self
-            let formattedTravelTime = formatTravelTime(timeInSeconds: self.travelTime)
-            // Configure the fields of the interface.
-            //self.composeVC.recipients = ["4085551212"]
-            if formattedTravelTime.0 > 1  {
-                self.composeVC.body = "My drive to \(self.commute?.destination?.name ?? "our destination") will take \(formattedTravelTime.0) hours and \(formattedTravelTime.1) minutes.\nSent from YouCommute."
+            currentCommute.directions.calculateETA { (response, error) in
+                guard error == nil, let response = response else {return}
+                
+                let currentDriveTime = self.formatTravelTime(timeInSeconds: response.expectedTravelTime)
+                let composeVC = MFMessageComposeViewController()
+                composeVC.messageComposeDelegate = self
+                let formattedTravelTime = self.formatTravelTime(timeInSeconds: self.travelTime)
+                // Configure the fields of the interface.
+                //self.composeVC.recipients = ["4085551212"]
+                if formattedTravelTime.0 > 1  {
+                    composeVC.body = "My drive to \(self.commute?.destination?.name ?? "our destination") will take \(currentDriveTime.0) hours and \(currentDriveTime.1) minutes.\nSent from YouCommute."
+                }
+                else if formattedTravelTime.0 == 1 {
+                    composeVC.body = "My drive to \(self.commute?.destination?.name ?? "our destination") will take \(currentDriveTime.0) hour and \(currentDriveTime.1) minutes.\nSent from YouCommute."
+                }
+                else {
+                    composeVC.body = "My drive to \(self.commute?.destination?.name ?? "our destination") will take \(currentDriveTime.0) minutes.\nSent from YouCommute."
+                }
+                
+                // Present the view controller modally.
+                self.present(composeVC, animated: true, completion: nil)
+                
             }
-            else if formattedTravelTime.0 == 1 {
-                self.composeVC.body = "My drive to \(self.commute?.destination?.name ?? "our destination") will take \(formattedTravelTime.0) hour and \(formattedTravelTime.1) minutes.\nSent from YouCommute."
-            }
-            else {
-                self.composeVC.body = "My drive to \(self.commute?.destination?.name ?? "our destination") will take \(formattedTravelTime.1) minutes.\nSent from YouCommute."
-            }
             
-            // Present the view controller modally.
-            self.present(self.composeVC, animated: true, completion: nil)
             
+            
+
         } else {
             print("SMS services are not available")
         }
@@ -97,6 +116,7 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
         
         sheet.addAction(UIAlertAction(title: "Send Text Status", style: .default, handler: { (_) in
             self.showTextMessage()
+          
         }))
         
         sheet.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
@@ -115,11 +135,15 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
         return (hours, minutes, remainingSeconds)
     }
     
-    func formatTime(time: Double, arrivalTime: String?) -> String {
+    func getTimeToLeave(time: Double, arrivalTime: String?) -> String {
         print(time)
+        
+        // converts seconds to (hour, minute, second)
         let hr_min_sec = formatTravelTime(timeInSeconds: time)
         let hours = hr_min_sec.0
         let minutes = hr_min_sec.1
+        
+        // Split the arrival time to an array to get rid of the AM / PM
         var time1Arr = [String.SubSequence]()
         if let commute = self.commute {
             time1Arr = commute.arrivalTime.split(separator: " ")
@@ -127,16 +151,18 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
         else{
             time1Arr = arrivalTime!.split(separator: " ")
         }
+       
         
-        print(hr_min_sec)
-        
-        print(time1Arr)
+        // split the arrival time at the : to separate hour and minutes and parse the numbers from string to double
         let timeArr = time1Arr[0].split(separator: ":")
         let arrivalHour = Double(timeArr[0])
         let arrivalMinutes = Double(timeArr[1])
         
+        // define new variables to hold the leave hour and minute to be used in the next operation
         var leaveHour = arrivalHour!
         var leaveMin = arrivalMinutes!
+        // iterate back like a clock
+        // we are iterating back by the minute, so we convert the hours+minutes into just minutes
         for _ in 0..<(Int(minutes) + 60 * Int(hours)){
             leaveMin -= 1
             if leaveMin < 0{
@@ -154,11 +180,34 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
             }
             
         }
-        
         if leaveMin < 10{
             return "\(Int(leaveHour)):0\(Int(leaveMin)) \(time1Arr[1])"
         }
         return "\(Int(leaveHour)):\(Int(leaveMin)) \(time1Arr[1])"
     }
     
+}
+
+// CORE LOCATION MANAGER DELEGATE FUNCTIONS
+// Using the core location library forces us to implement these functions
+extension EventDetailsViewController: CLLocationManagerDelegate{
+    
+    // Handles errors. This will throw a runtime error if it is not implmented
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Error: \(error)")
+    }
+    
+    // requests user's current location after allowing the app to use the current location
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if status == .authorizedWhenInUse {
+            clManager.requestLocation()
+        }
+    }
+    
+    // updates the map to the user's location
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.first {
+            self.currentLocation = location
+        }
+    }
 }

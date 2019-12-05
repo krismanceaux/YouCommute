@@ -11,7 +11,7 @@ import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
-    
+    // need an app delegate for ios 12
     var window: UIWindow?
     let notificatioinManager = NotificationManager()
     

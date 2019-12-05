@@ -49,7 +49,6 @@ struct dbEntry{
     let arrivalTime = Expression<String>("arrivalTime")
     let dateOfCommute = Expression<String>("dateOfCommute")
     let isSrcCurrentLoc = Expression<Bool>("isSrcCurrentLoc")
-//    let srcAddress =
 }
 
 class EventListViewController: UIViewController {
@@ -113,7 +112,6 @@ class EventListViewController: UIViewController {
 
         do {
             try self.database.run(table)
-            print("Created Table")
         } catch {
             print(error)
         }
@@ -126,6 +124,7 @@ class EventListViewController: UIViewController {
             guard error == nil, let response = response else {return}
             let travelTimeLabel = cell.viewWithTag(1) as! UILabel
             let tTime = response.expectedTravelTime
+            // APPEND HERE
             self.travelTimes.append(tTime)
             travelTimeLabel.text = self.formatTime(time: tTime)
         }
@@ -155,6 +154,19 @@ class EventListViewController: UIViewController {
         return ("\(Int(hours)) hr \(Int(minutes)) min")
     }
 
+    func getPlacemark(location: CLLocation) -> MKPlacemark {
+        var addressDict: [String: String] = [:]
+        CLGeocoder().reverseGeocodeLocation(location){ (placemark, error) in
+            if error != nil{
+                print(error?.localizedDescription ?? "ERROR")
+            }
+            if let place = placemark?[0] {
+                addressDict = [CNPostalAddressStreetKey: place.name!, CNPostalAddressCityKey: place.locality!, CNPostalAddressPostalCodeKey: place.postalCode!, CNPostalAddressISOCountryCodeKey: place.isoCountryCode!]
+            }
+        }
+        return MKPlacemark(coordinate: location.coordinate, addressDictionary: addressDict)
+    }
+    
     // this function queries for all the commutes for today's date, uses the coordinates to geolocate a placemark, each placemark is put into a commute object, then the commute is appended to a list of commutes which is assigned to the commutes member variable
     func getPlacemarksFromCoordinates(){
         // list commutes
@@ -205,9 +217,11 @@ class EventListViewController: UIViewController {
                                 
                                 let destCoordinates = CLLocationCoordinate2DMake(commute[self.columns.destLat], commute[self.columns.destLong])
                                 let com = Commute(source: MKPlacemark(coordinate: srcCoordinates, addressDictionary: srcAddressDict), destination: MKPlacemark(coordinate: destCoordinates, addressDictionary: destAddressDict), eventName: commute[self.columns.eventName], arrivalTime: commute[self.columns.arrivalTime], dateOfCommute: commute[self.columns.dateOfCommute])
+                                // APPEND HERE
                                 self.commutes.append(com)
-
+                                self.commutes = self.commutes.sorted(by: { $0.arrivalTime < $1.arrivalTime })
                                 self.tableView.reloadData()
+                                
                             }
                         }
                     }
@@ -215,6 +229,9 @@ class EventListViewController: UIViewController {
                 
                
            }
+            
+            
+            
            if isEmpty{
                alertTemplate(msg: "There are no commutes scheduled for this day")
            }
@@ -225,7 +242,8 @@ class EventListViewController: UIViewController {
     
     
     override func viewDidAppear(_ animated: Bool) {
-       getPlacemarksFromCoordinates()
+        self.travelTimes = []
+        getPlacemarksFromCoordinates()
     }
     
     // generic error handling alert
