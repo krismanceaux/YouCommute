@@ -91,11 +91,11 @@ class EventListViewController: UIViewController {
             print(error)
         }
 
-//        do{
-//            try database.run(commuteTable.drop(ifExists: true))
-//        } catch {
-//            print("error")
-//        }
+        do{
+            try database.run(commuteTable.drop(ifExists: true))
+        } catch {
+            print("error")
+        }
 
         let table = self.commuteTable.create(ifNotExists: true) {
             (table) in
@@ -190,7 +190,8 @@ class EventListViewController: UIViewController {
                         print(error?.localizedDescription ?? "ERROR")
                     }
                     if let place = placemark?[0] {
-                        srcAddressDict = [CNPostalAddressStreetKey: place.name!, CNPostalAddressCityKey: place.locality!, CNPostalAddressPostalCodeKey: place.postalCode!, CNPostalAddressISOCountryCodeKey: place.isoCountryCode!]
+                        srcAddressDict = [CNPostalAddressStreetKey: place.name!, CNPostalAddressCityKey:
+                            place.locality!, CNPostalAddressPostalCodeKey: place.postalCode!, CNPostalAddressISOCountryCodeKey: place.isoCountryCode!]
 
                         CLGeocoder().reverseGeocodeLocation(destLocation){ (placemark, error) in
                             if error != nil{
@@ -225,7 +226,8 @@ class EventListViewController: UIViewController {
     
     
     override func viewDidAppear(_ animated: Bool) {
-       getPlacemarksFromCoordinates()
+        self.travelTimes = []
+        getPlacemarksFromCoordinates()
     }
     
     // generic error handling alert
