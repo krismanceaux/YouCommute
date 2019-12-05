@@ -76,7 +76,7 @@ class EventListViewController: UIViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
          //self.navigationItem.rightBarButtonItem = self.editButtonItem
-
+        
         clManager.delegate = self
         clManager.desiredAccuracy = kCLLocationAccuracyBest
         clManager.requestWhenInUseAuthorization()
@@ -295,6 +295,11 @@ extension EventListViewController: UITableViewDataSource, UITableViewDelegate {
         getETA(direction: commutes[indexPath.row].directions, cell: cell, indexPath: indexPath)
         let eventNameLabel = cell.viewWithTag(2) as! UILabel
         eventNameLabel.text = commutes[indexPath.row].eventName
+//        let bg = cell.viewWithTag(4)!
+//        bg.layer.cornerRadius = 26;
+//        bg.layer.masksToBounds = true;
+        
+        
         return cell
     }
 }
