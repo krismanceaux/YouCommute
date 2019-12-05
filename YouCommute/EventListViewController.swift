@@ -91,11 +91,11 @@ class EventListViewController: UIViewController {
         }
         
         
-        do{
-            try database.run(commuteTable.drop(ifExists: true))
-        } catch {
-            print("error")
-        }
+//        do{
+//            try database.run(commuteTable.drop(ifExists: true))
+//        } catch {
+//            print("error")
+//        }
 
         let table = self.commuteTable.create(ifNotExists: true) {
             (table) in

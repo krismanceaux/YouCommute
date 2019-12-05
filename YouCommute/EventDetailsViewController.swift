@@ -75,20 +75,20 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
             currentCommute.directions.calculateETA { (response, error) in
                 guard error == nil, let response = response else {return}
                 
+                print("In text \(response.expectedTravelTime)")
                 let currentDriveTime = self.formatTravelTime(timeInSeconds: response.expectedTravelTime)
                 let composeVC = MFMessageComposeViewController()
                 composeVC.messageComposeDelegate = self
-                let formattedTravelTime = self.formatTravelTime(timeInSeconds: self.travelTime)
                 // Configure the fields of the interface.
                 //self.composeVC.recipients = ["4085551212"]
-                if formattedTravelTime.0 > 1  {
-                    composeVC.body = "My drive to \(self.commute?.destination?.name ?? "our destination") will take \(currentDriveTime.0) hours and \(currentDriveTime.1) minutes.\nSent from YouCommute."
+                if currentDriveTime.0 > 1  {
+                    composeVC.body = "I am \(Int(currentDriveTime.0)) hours and \(Int(currentDriveTime.1)) minutes away from \(self.commute?.destination?.name ?? "our destination")!\nSent from YouCommute."
                 }
-                else if formattedTravelTime.0 == 1 {
-                    composeVC.body = "My drive to \(self.commute?.destination?.name ?? "our destination") will take \(currentDriveTime.0) hour and \(currentDriveTime.1) minutes.\nSent from YouCommute."
+                else if currentDriveTime.0 == 1 {
+                    composeVC.body = "I am \(Int(currentDriveTime.0)) hour and \(Int(currentDriveTime.1)) minutes away from \(self.commute?.destination?.name ?? "our destination")!\nSent from YouCommute."
                 }
                 else {
-                    composeVC.body = "My drive to \(self.commute?.destination?.name ?? "our destination") will take \(currentDriveTime.0) minutes.\nSent from YouCommute."
+                    composeVC.body = "I am \(Int(currentDriveTime.1)) minutes away from \(self.commute?.destination?.name ?? "our destination")!\nSent from YouCommute."
                 }
                 
                 // Present the view controller modally.
