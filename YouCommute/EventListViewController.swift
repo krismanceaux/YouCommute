@@ -75,7 +75,7 @@ class EventListViewController: UIViewController {
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+         //self.navigationItem.rightBarButtonItem = self.editButtonItem
 
         clManager.delegate = self
         clManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -89,13 +89,12 @@ class EventListViewController: UIViewController {
         } catch {
             print(error)
         }
-        
-        
-//        do{
-//            try database.run(commuteTable.drop(ifExists: true))
-//        } catch {
-//            print("error")
-//        }
+
+        do{
+            try database.run(commuteTable.drop(ifExists: true))
+        } catch {
+            print("error")
+        }
 
         let table = self.commuteTable.create(ifNotExists: true) {
             (table) in
@@ -179,6 +178,7 @@ class EventListViewController: UIViewController {
             var isEmpty = true
                    
             for commute in commutesQuery {
+                print(commute)
                 isEmpty = false
                 var srcAddressDict: [String: String] = [:]
                 var destAddressDict: [String: String] = [:]
@@ -202,7 +202,8 @@ class EventListViewController: UIViewController {
                         print(error?.localizedDescription ?? "ERROR")
                     }
                     if let place = placemark?[0] {
-                        srcAddressDict = [CNPostalAddressStreetKey: place.name!, CNPostalAddressCityKey: place.locality!, CNPostalAddressPostalCodeKey: place.postalCode!, CNPostalAddressISOCountryCodeKey: place.isoCountryCode!]
+                        srcAddressDict = [CNPostalAddressStreetKey: place.name!, CNPostalAddressCityKey:
+                            place.locality!, CNPostalAddressPostalCodeKey: place.postalCode!, CNPostalAddressISOCountryCodeKey: place.isoCountryCode!]
 
                         CLGeocoder().reverseGeocodeLocation(destLocation){ (placemark, error) in
                             if error != nil{
