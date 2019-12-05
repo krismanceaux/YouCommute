@@ -23,6 +23,7 @@ class CalendarViewController: UIViewController {
 
     var source: MKPlacemark? = nil
 
+    @IBOutlet weak var inti: UIButton!
     @IBOutlet weak var calendar_view: FSCalendar!
     
     @IBAction func integrate(_ sender: UIButton) {
@@ -47,6 +48,8 @@ class CalendarViewController: UIViewController {
         default:
             print("Case Default")
         }
+        inti.isEnabled = false
+        inti.alpha = 0.0
     }
     
     var val = true
@@ -57,7 +60,6 @@ class CalendarViewController: UIViewController {
     func readEvents()
     {
         if val{
-            var date_of_commute : [Date] = []
             let eventStore = EKEventStore()
             let calendars = eventStore.calendars(for: .event)
             
@@ -73,29 +75,20 @@ class CalendarViewController: UIViewController {
                     
                     for event in events
                     {
-                        if event.structuredLocation?.geoLocation?.coordinate != nil && event.title != nil
+                        if event.structuredLocation?.geoLocation?.coordinate != nil
                         {
                             titles.append(event.title)
                             dest.append(event.structuredLocation?.geoLocation)
-                            date_of_commute.append(event.startDate! as Date)
-                            if date_of_commute.isEmpty == false
-                            {
-                                for a in date_of_commute
-                                {
-                                    if !date_commute.contains(self.dateFormatter2.string(from: a)){
-                                        date_commute.append(self.dateFormatter2.string(from: a))
-                                    }
-                                    if !time_commute.contains(self.dateFormatter3.string(from: a)){
-                                        time_commute.append(self.dateFormatter3.string(from: a))
-                                    }
-                                }
-                                print(time_commute)
-                                print(date_of_commute)
-                                print(event)
-                            }
+                            time_commute.append(self.dateFormatter3.string(from: event.startDate! as Date))
+                            date_commute.append(self.dateFormatter2.string(from: event.startDate! as Date))
+                            print(event)
                         }
                      }
             }
+            print(titles)
+            print(dest)
+            print(date_commute)
+            print(time_commute)
             val = false
         }
     }
@@ -126,7 +119,7 @@ class CalendarViewController: UIViewController {
     }
     
     var database: Connection!
-    public var eventsio = [String]()
+    var eventsio = [String]()
     
     override func viewDidLoad() {
         do {
@@ -155,9 +148,6 @@ class CalendarViewController: UIViewController {
                 dateFormatter.dateFormat = "MM-dd-yyyy"
                 var somedate = try i.get(col.dateOfCommute)
                 somedate = formatDate2(date: somedate)
-//                dateFormatter.dateFormat = "yyyy-MM-dd"
-//                somedate = dateFormatter.string(for: somedate)
-//                print(somedate)
                 if(!eventsio.contains(somedate))
                 {
                     eventsio.append(somedate)
