@@ -10,28 +10,21 @@ import UIKit
 import MapKit
 import MessageUI
 import CoreLocation
-
+import SQLite
 
 class EventDetailsViewController: UIViewController, MFMessageComposeViewControllerDelegate {
-    
-    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
-        switch result{
-        case .cancelled:
-            dismiss(animated: true, completion: nil)
-        case .failed:
-            dismiss(animated: true, completion: nil)
-        case .sent:
-            dismiss(animated: true, completion: nil)
-        default:
-            dismiss(animated: true, completion: nil)
-        }
-    }
-    
     
     var commute: Commute?
     var travelTime: Double = 0.0
     let clManager = CLLocationManager()
     var currentLocation: CLLocation?
+    
+    let commuteTable = Table("commute")
+    let columns = dbEntry()
+    var database: Connection!
+    var indexPath: IndexPath?
+
+    
     
     @IBOutlet weak var whenToLeave: UILabel!
     @IBOutlet weak var dateOfCommute: UITextField!
@@ -57,6 +50,16 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
         clManager.desiredAccuracy = kCLLocationAccuracyBest
         //clManager.requestWhenInUseAuthorization()
         clManager.requestLocation()
+        
+        
+        do {
+           let documentDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+           let fileUrl = documentDirectory.appendingPathComponent("users").appendingPathExtension("sqlite3")
+           let database = try Connection(fileUrl.path)
+           self.database = database
+       } catch {
+           print(error)
+       }
     }
     
     func showTextMessage(){
@@ -104,6 +107,25 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
         }
     }
     
+    func deleteCommute(){
+        print("Inside delete commute")
+        let alert = UIAlertController(title: "Delete", message: "Are you sure you want to delete this selection?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (_) in
+            let commuteToDelete = self.commuteTable.filter(self.columns.eventName == self.commute!.eventName).filter(self.columns.dateOfCommute == self.commute!.dateOfCommute)
+            do{
+                try self.database.run(commuteToDelete.delete())
+            } catch {
+                print("Delete failed: \(error)")
+            }
+            
+        }))
+        alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+        
+        self.present(alert, animated: true, completion: nil)
+
+    }
+    
+    
     @IBAction func listButtonUIBar(_ sender: Any) {
         // Function body goes here
         let sheet = UIAlertController(title: "Actions", message: "Select one", preferredStyle: .actionSheet)
@@ -118,6 +140,14 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
             self.showTextMessage()
           
         }))
+        
+        sheet.addAction(UIAlertAction(title: "Delete Commute", style: .default, handler: { (_) in
+            
+            // call method to delete commute
+            self.deleteCommute()
+            
+        }))
+        
         
         sheet.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
         
@@ -185,6 +215,21 @@ class EventDetailsViewController: UIViewController, MFMessageComposeViewControll
         }
         return "\(Int(leaveHour)):\(Int(leaveMin)) \(time1Arr[1])"
     }
+    
+    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+        switch result{
+        case .cancelled:
+            dismiss(animated: true, completion: nil)
+        case .failed:
+            dismiss(animated: true, completion: nil)
+        case .sent:
+            dismiss(animated: true, completion: nil)
+        default:
+            dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    
     
 }
 

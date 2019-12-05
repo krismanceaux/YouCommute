@@ -10,10 +10,8 @@ import UIKit
 import MapKit
 import SQLite
 import CoreLocation
-// ==============================================================================================================================================
 import UserNotifications
 import NotificationCenter
-// ==============================================================================================================================================
 
 
 protocol HandleMapSearch {
@@ -42,11 +40,9 @@ class FirstViewController : UIViewController{
     @IBOutlet weak var dateTextField: UITextField!
     @IBOutlet weak var timeTextField: UITextField!
     
-    // ==============================================================================================================================================
-    // To move the view up - Mustafa
+    
+    // To move the view up
     var isKeyboardAppear = false
-    // ==============================================================================================================================================
-
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,18 +84,14 @@ class FirstViewController : UIViewController{
             print(error)
         }
         
-        // ==============================================================================================================================================
+        
         // To move the View Up when the keyboard is present in the view - Mustafa
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        // ==============================================================================================================================================
+       
         print(timeTextField.text!)
         
     }
-    
-    
-    
-    // ==============================================================================================================================================
 
     // To move the View Up when the keyboard is present in the view - Mustafa
     @objc func keyboardWillShow(notification: NSNotification) {
@@ -128,9 +120,6 @@ class FirstViewController : UIViewController{
         //Causes the view (or one of its embedded text fields) to resign the first responder status.
         view.endEditing(true)
     }
-    
-    
-    // ==============================================================================================================================================
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toSearchResults" {
@@ -253,12 +242,8 @@ class FirstViewController : UIViewController{
             dateComponents.day = day!
             dateComponents.hour = milHr
             dateComponents.minute = ttlMin
-            
-            let calendar = Calendar.current
-            let finalDateTime = calendar.date(from: dateComponents)
-            
-            
-            notificationManager.sendNotification(title: commute.eventName, subTitle: "To \(commute.destination!.name ?? "your destination")", body: "It's time to leave!", badge: nil, delayUntilDateTime: dateComponents)
+                        
+            notificationManager.sendNotification(title: commute.eventName, subTitle: "\(commute.destination!.name ?? "Your next destination")", body: "It's time to leave!", badge: nil, delayUntilDateTime: dateComponents)
             
             
         }

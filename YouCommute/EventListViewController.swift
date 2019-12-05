@@ -68,6 +68,7 @@ class EventListViewController: UIViewController {
     var travelTimes: [Double] = []
     var selectedCommute: Commute?
     var selectedTime: Double?
+    var selectedIndexPath : IndexPath?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,11 +91,11 @@ class EventListViewController: UIViewController {
             print(error)
         }
 
-        do{
-            try database.run(commuteTable.drop(ifExists: true))
-        } catch {
-            print("error")
-        }
+//        do{
+//            try database.run(commuteTable.drop(ifExists: true))
+//        } catch {
+//            print("error")
+//        }
 
         let table = self.commuteTable.create(ifNotExists: true) {
             (table) in
@@ -222,7 +223,6 @@ class EventListViewController: UIViewController {
                                 self.commutes.append(com)
                                 self.commutes = self.commutes.sorted(by: { $0.arrivalTime < $1.arrivalTime })
                                 self.tableView.reloadData()
-                                
                             }
                         }
                     }
@@ -231,10 +231,8 @@ class EventListViewController: UIViewController {
                
            }
             
-            
-            
            if isEmpty{
-               alertTemplate(msg: "There are no commutes scheduled for this day")
+            alertTemplate(title: "Empty day!",msg: "There are no commutes scheduled for this day")
            }
         } catch {
            print(error)
@@ -243,13 +241,18 @@ class EventListViewController: UIViewController {
     
     
     override func viewDidAppear(_ animated: Bool) {
+        //self.tableView.isUserInteractionEnabled = false
         self.travelTimes = []
         getPlacemarksFromCoordinates()
+        self.tableView.reloadData()
+        //self.view.isUserInteractionEnabled = false
+
     }
     
+    
     // generic error handling alert
-    func alertTemplate(msg: String){
-        let alert = UIAlertController(title: "Error", message: msg, preferredStyle: .alert)
+    func alertTemplate(title: String, msg: String){
+        let alert = UIAlertController(title: title, message: msg, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
         self.present(alert, animated: true)
     }
@@ -259,6 +262,7 @@ class EventListViewController: UIViewController {
             let detailsVC = segue.destination as! EventDetailsViewController
             detailsVC.commute = self.selectedCommute
             detailsVC.travelTime = self.selectedTime!
+            detailsVC.indexPath = self.selectedIndexPath
         }
     }
 
@@ -271,6 +275,7 @@ extension EventListViewController: UITableViewDataSource, UITableViewDelegate {
         
         self.selectedCommute = commutes[indexPath.row]
         self.selectedTime = travelTimes[indexPath.row]
+        self.selectedIndexPath = indexPath
         performSegue(withIdentifier: "toEventDetails", sender: self)
     }
     
